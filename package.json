@@ -1,0 +1,22 @@
+{
+    "name": "findmyride",
+    "repository": "git@github.com:seralexeev/findmyride.git",
+    "author": "Sergey <ser.alexeev@gmail.com>",
+    "license": "MIT",
+    "packageManager": "yarn@4.1.0",
+    "scripts": {
+        "moon": "moon"
+    },
+    "workspaces": [
+        "packages/*",
+        "projects/*"
+    ],
+    "dependencies": {
+        "@moonrepo/cli": "1.21.3",
+        "prettier": "3.2.5",
+        "typescript": "5.3.3"
+    },
+    "engines": {
+        "node": "iron"
+    }
+}

@@ -1,0 +1,64 @@
+fileGroups:
+  sources:
+    - 'src/**/*.{ts,tsx,js,jsx,json}'
+  docs:
+    - '**/*.{md,mdx}'
+  configs:
+    - '**/*.{yml,yaml,json}'
+
+tasks:
+  format:
+    command:
+      - 'prettier'
+      - '--config'
+      - '@in(0)'
+      - '--ignore-path'
+      - '@in(1)'
+      - '--write'
+      - '--cache-location'
+      - '/node_modules/.cache/prettier/.prettier-cache'
+      - '.'
+    inputs:
+      - '/.prettierrc'
+      - '/.prettierignore'
+      - '@globs(sources)'
+      - '@globs(configs)'
+      - '@globs(docs)'
+    local: true
+    options:
+      outputStyle: buffer-only-failure
+
+  format_check:
+    command:
+      - 'prettier'
+      - '--config'
+      - '@in(0)'
+      - '--ignore-path'
+      - '@in(1)'
+      - '--check'
+      - '--cache-location'
+      - '/node_modules/.cache/prettier/.prettier-cache'
+      - '.'
+    inputs:
+      - '/.prettierrc'
+      - '/.prettierignore'
+      - '@globs(sources)'
+      - '@globs(configs)'
+      - '@globs(docs)'
+    options:
+      outputStyle: buffer-only-failure
+
+  tsc:
+    command:
+      - 'tsc'
+    inputs:
+      - '@globs(sources)'
+      - 'tsconfig.json'
+      - 'tsconfig.*.json'
+      - '/tsconfig.common.json'
+    outputs:
+      - 'dist'
+    deps:
+      - '^:tsc'
+    options:
+      outputStyle: buffer-only-failure

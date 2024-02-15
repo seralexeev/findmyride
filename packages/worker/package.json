@@ -1,0 +1,17 @@
+{
+    "name": "@untype/worker",
+    "exports": {
+        ".": {
+            "require": "./dist/index.js"
+        }
+    },
+    "devDependencies": {
+        "type-fest": "4.10.2"
+    },
+    "dependencies": {
+        "@untype/pg": "workspace:*",
+        "@untype/toolbox": "workspace:*",
+        "graphile-worker": "0.16.2",
+        "zod": "3.22.4"
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "extends": "../../tsconfig.common.json",
+    "compilerOptions": {
+        "rootDir": "src",
+        "outDir": "dist",
+        "tsBuildInfoFile": "dist/.tsbuildinfo"
+    },
+    "include": ["src"],
+    "references": [
+        {
+            "path": "../toolbox"
+        },
+        {
+            "path": "../rpc"
+        }
+    ]
+}

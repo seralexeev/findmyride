@@ -1,0 +1,23 @@
+{
+    "name": "@untype/migrations",
+    "exports": {
+        ".": {
+            "require": "./dist/index.js"
+        },
+        "./cli": {
+            "require": "./dist/cli.js"
+        }
+    },
+    "dependencies": {
+        "@untype/pg": "workspace:*",
+        "@untype/toolbox": "workspace:*",
+        "commander": "12.0.0",
+        "source-map-support": "0.5.21",
+        "zod": "3.22.4"
+    },
+    "devDependencies": {
+        "@jest/globals": "29.7.0",
+        "@types/source-map-support": "0.5.10",
+        "testcontainers": "10.7.1"
+    }
+}

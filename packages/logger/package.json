@@ -1,0 +1,17 @@
+{
+    "name": "@untype/logger",
+    "exports": {
+        ".": {
+            "require": "./dist/index.js"
+        }
+    },
+    "dependencies": {
+        "@untype/toolbox": "workspace:*",
+        "colorette": "2.0.20",
+        "js-yaml": "4.1.0"
+    },
+    "devDependencies": {
+        "@types/js-yaml": "4.0.9",
+        "cli-highlight": "2.1.11"
+    }
+}

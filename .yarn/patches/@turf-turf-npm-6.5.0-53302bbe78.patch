@@ -1,0 +1,14 @@
+diff --git a/package.json b/package.json
+index 1946d013646f884c74f2d5c7bf94d282154accdc..aa95eed1a083d395bc02deaaa4e586d928496d40 100644
+--- a/package.json
++++ b/package.json
+@@ -49,7 +49,8 @@
+     "./package.json": "./package.json",
+     ".": {
+       "import": "./dist/es/index.js",
+-      "require": "./dist/js/index.js"
++      "require": "./dist/js/index.js",
++      "types": "./index.d.ts"
+     }
+   },
+   "browser": "turf.min.js",

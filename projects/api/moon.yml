@@ -1,0 +1,94 @@
+$schema: 'https://moonrepo.dev/schemas/project.json'
+
+tasks:
+  migration_create:
+    command: 'ts-node ../../packages/migrations/src/cli create src/migrations'
+    local: true
+    options:
+      persistent: false
+      outputStyle: buffer
+
+  migration_regenerate:
+    command: 'ts-node ../../packages/migrations/src/cli regenerate src/migrations'
+    local: true
+    options:
+      persistent: false
+      outputStyle: buffer
+
+  migration_apply:
+    command: 'ts-node src/migrations/MigrationRunner.ts -p tsconfig.migrations.json'
+    deps:
+      - 'migrations:tsc'
+      - 'logger:tsc'
+    local: true
+    env:
+      CONNECTION_STRING: 'postgres://findmyride:findmyride@localhost:5438/findmyride'
+    options:
+      persistent: false
+      outputStyle: buffer
+
+  entities_generate:
+    command: 'ts-node ../../packages/orm/src/cli generate src/entities -c postgres://findmyride:findmyride@localhost:5438/findmyride'
+    local: true
+    options:
+      persistent: false
+      outputStyle: buffer
+
+  db_dev:
+    command: noop
+    deps:
+      - '~:migration_apply'
+      - '~:entities_generate'
+      - '~:db_dump'
+    local: true
+    options:
+      runDepsInParallel: false
+      outputStyle: buffer
+
+  db_dump:
+    command: 'docker exec -it findmyride-pg-1 pg_dump -s -U findmyride -d findmyride -f /tmp/schema.sql && docker cp findmyride-pg-1:/tmp/schema.sql ../../projects/api/src/migrations/schema.sql'
+    local: true
+    options:
+      persistent: false
+      outputStyle: buffer
+
+  compose_reset:
+    command: noop
+    deps:
+      - '~:compose_down'
+      - '~:compose_up'
+    local: true
+    options:
+      runDepsInParallel: false
+      outputStyle: buffer
+
+  compose:
+    command: noop
+    deps:
+      - '~:compose_up'
+    local: true
+    options:
+      runDepsInParallel: false
+      outputStyle: buffer
+
+  compose_up:
+    command: 'docker compose --project-name findmyride -f ../../misc/docker-compose.yaml up'
+    platform: system
+    local: true
+    options:
+      persistent: true
+
+  compose_down:
+    command: 'docker compose --project-name findmyride -f ../../misc/docker-compose.yaml down'
+    platform: system
+    local: true
+    options:
+      persistent: false
+
+  dev:
+    command: 'node dist/start.js'
+    deps:
+      - '~:tsc'
+    local: true
+    options:
+      persistent: false

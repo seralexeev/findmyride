@@ -1,0 +1,12 @@
+{
+    "name": "@untype/geo",
+    "exports": {
+        ".": {
+            "require": "./dist/index.js"
+        }
+    },
+    "dependencies": {
+        "@turf/turf": "patch:@turf/turf@npm%3A6.5.0#~/.yarn/patches/@turf-turf-npm-6.5.0-53302bbe78.patch",
+        "zod": "3.22.4"
+    }
+}

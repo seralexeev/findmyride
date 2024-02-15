@@ -1,0 +1,35 @@
+{
+    "name": "@untype/orm",
+    "exports": {
+        ".": {
+            "require": "./dist/index.js"
+        },
+        "./cli": {
+            "require": "./dist/cli.js"
+        }
+    },
+    "devDependencies": {
+        "@types/big.js": "6.2.2",
+        "@types/pg": "8.11.0",
+        "commander": "12.0.0",
+        "dedent": "1.5.1",
+        "type-fest": "4.10.2"
+    },
+    "dependencies": {
+        "@graphile-contrib/pg-many-to-many": "1.0.2",
+        "@graphile-contrib/pg-order-by-related": "1.0.0",
+        "@graphile-contrib/pg-simplify-inflector": "6.1.0",
+        "@graphile/postgis": "0.2.0",
+        "@untype/pg": "workspace:*",
+        "@untype/toolbox": "workspace:*",
+        "big.js": "6.2.1",
+        "change-case": "4.1.2",
+        "graphile-build": "4.14.0",
+        "graphql": "15.8.0",
+        "pg": "8.11.3",
+        "postgraphile": "4.14.0",
+        "postgraphile-core": "4.14.0",
+        "postgraphile-plugin-connection-filter": "2.3.0",
+        "postgraphile-upsert-plugin": "3.3.0"
+    }
+}

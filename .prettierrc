@@ -1,0 +1,21 @@
+{
+    "printWidth": 128,
+    "tabWidth": 4,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "jsxSingleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "bracketSameLine": false,
+    "arrowParens": "always",
+    "endOfLine": "lf",
+    "overrides": [
+        {
+            "files": ["*.yml", "*.yaml"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
+}

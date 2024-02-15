@@ -1,0 +1,34 @@
+{
+    "extends": "../../tsconfig.common.json",
+    "compilerOptions": {
+        "composite": true,
+        "outDir": "dist",
+        "tsBuildInfoFile": "dist/.tsbuildinfo"
+    },
+    "references": [
+        {
+            "path": "../../packages/worker"
+        },
+        {
+            "path": "../../packages/pg"
+        },
+        {
+            "path": "../../packages/orm"
+        },
+        {
+            "path": "../../packages/geo"
+        },
+        {
+            "path": "../../packages/toolbox"
+        },
+        {
+            "path": "../../packages/config"
+        },
+        {
+            "path": "../../packages/logger"
+        },
+        {
+            "path": "../../packages/rpc-express"
+        }
+    ]
+}

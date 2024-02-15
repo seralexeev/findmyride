@@ -1,0 +1,17 @@
+{
+    "name": "@untype/rpc",
+    "exports": {
+        ".": {
+            "require": "./dist/index.js"
+        },
+        "./types": {
+            "require": "./dist/types.js"
+        }
+    },
+    "dependencies": {
+        "@untype/toolbox": "workspace:*",
+        "path-to-regexp": "6.2.1",
+        "type-fest": "4.10.2",
+        "zod": "3.22.4"
+    }
+}

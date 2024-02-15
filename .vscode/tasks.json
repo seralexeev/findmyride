@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "🚀 api:build",
+            "type": "shell",
+            "command": "moon run api:build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "🐳 api:compose_reset",
+            "type": "shell",
+            "command": "moon run api:compose_reset"
+        },
+        {
+            "label": "🐳 api:compose",
+            "type": "shell",
+            "command": "moon run api:compose"
+        },
+        {
+            "label": "🛠️ api:db_dev",
+            "type": "shell",
+            "command": "moon run api:db_dev"
+        }
+    ]
+}

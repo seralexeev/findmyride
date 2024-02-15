@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "🚀 api",
+            "type": "node",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "preLaunchTask": "🚀 api:build",
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsc-watch",
+            "env": {
+                "TZ": "UTC"
+            },
+            "args": [
+                "-b",
+                "${workspaceFolder}/projects/api",
+                "--onSuccess",
+                "node ${workspaceFolder}/projects/api/dist/start.js"
+            ]
+        }
+    ]
+}
