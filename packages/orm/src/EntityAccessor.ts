@@ -59,7 +59,7 @@ export class EntityAccessor<T> {
         const data = await this.findByPk(t, query);
         if (!data) {
             throw new NotFoundError(`${this.name} not found`, {
-                data: { pk: query.pk },
+                internal: { pk: query.pk },
             });
         }
 
@@ -82,7 +82,7 @@ export class EntityAccessor<T> {
         const data = await this.findFirst(t, query);
         if (!data) {
             throw new NotFoundError(`${this.name} not found`, {
-                data: { filter: query.filter },
+                internal: { filter: query.filter },
             });
         }
 

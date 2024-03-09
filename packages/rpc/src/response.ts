@@ -1,8 +1,8 @@
-import { IncomingMessage, OutgoingMessage } from 'node:http';
+import { IncomingMessage, ServerResponse } from 'node:http';
 
 export type HttpContext = {
     req: IncomingMessage;
-    res: OutgoingMessage;
+    res: ServerResponse;
 };
 
 export abstract class EndpointResponse {
@@ -72,5 +72,22 @@ export class FileResponse extends EndpointResponse {
         }
 
         this.stream.pipe(res);
+    }
+}
+
+export class RedirectResponse extends EndpointResponse {
+    public constructor(
+        private location: string,
+        private options?: { statusCode?: number },
+    ) {
+        super();
+    }
+
+    public override write({ res }: HttpContext): void | Promise<void> {
+        res.writeHead(this.options?.statusCode ?? 302, {
+            Location: this.location,
+        });
+
+        res.end();
     }
 }

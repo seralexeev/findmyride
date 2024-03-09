@@ -9,3 +9,4 @@ done
 
 mc mb minio/findmyride
 mc anonymous set public minio/findmyride
+mc admin user svcacct add minio/findmyride findmyride --access-key "ak_findmyride" --secret-key "findmyride"

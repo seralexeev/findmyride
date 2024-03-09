@@ -231,7 +231,7 @@ BEGIN
     RETURN (
         SELECT CASE WHEN u.use_current_location THEN d.location ELSE u.location END
         FROM users AS u
-        JOIN user_devices AS d ON u.id = d.user_id
+        JOIN user_sessions AS d ON u.id = d.user_id
         WHERE u.id = arg_user_id AND d.id = arg_device_id::text
     );
 END
@@ -292,13 +292,14 @@ ALTER TABLE public.chat_rooms OWNER TO findmyride;
 
 CREATE TABLE public.files (
     id uuid DEFAULT public.uuid_generate_v7() NOT NULL,
-    type text NOT NULL,
     mime_type text NOT NULL,
     size integer,
     bucket text NOT NULL,
     key text NOT NULL,
     url text NOT NULL,
-    image_sizes jsonb,
+    width integer,
+    height integer,
+    blurhash text,
     meta jsonb DEFAULT '{}'::jsonb NOT NULL,
     updated_at timestamp with time zone DEFAULT clock_timestamp() NOT NULL,
     created_at timestamp with time zone DEFAULT clock_timestamp() NOT NULL
@@ -468,15 +469,14 @@ CREATE TABLE public.user2rooms (
 ALTER TABLE public.user2rooms OWNER TO findmyride;
 
 --
--- Name: user_devices; Type: TABLE; Schema: public; Owner: findmyride
+-- Name: user_sessions; Type: TABLE; Schema: public; Owner: findmyride
 --
 
-CREATE TABLE public.user_devices (
+CREATE TABLE public.user_sessions (
     id text NOT NULL,
     user_id uuid NOT NULL,
+    token_id uuid NOT NULL,
     fcm_token text,
-    push_authorization_status text,
-    refresh_token text,
     device_info jsonb,
     updated_at timestamp with time zone DEFAULT clock_timestamp() NOT NULL,
     created_at timestamp with time zone DEFAULT clock_timestamp() NOT NULL,
@@ -486,7 +486,7 @@ CREATE TABLE public.user_devices (
 );
 
 
-ALTER TABLE public.user_devices OWNER TO findmyride;
+ALTER TABLE public.user_sessions OWNER TO findmyride;
 
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: findmyride
@@ -611,11 +611,19 @@ ALTER TABLE ONLY public.user2rooms
 
 
 --
--- Name: user_devices user_devices_pkey; Type: CONSTRAINT; Schema: public; Owner: findmyride
+-- Name: user_sessions user_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: findmyride
 --
 
-ALTER TABLE ONLY public.user_devices
-    ADD CONSTRAINT user_devices_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.user_sessions
+    ADD CONSTRAINT user_sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_sessions user_sessions_token_id_key; Type: CONSTRAINT; Schema: public; Owner: findmyride
+--
+
+ALTER TABLE ONLY public.user_sessions
+    ADD CONSTRAINT user_sessions_token_id_key UNIQUE (token_id);
 
 
 --
@@ -749,10 +757,10 @@ CREATE TRIGGER rides_updated_at BEFORE UPDATE ON public.rides FOR EACH ROW EXECU
 
 
 --
--- Name: user_devices set_timestamp; Type: TRIGGER; Schema: public; Owner: findmyride
+-- Name: user_sessions set_timestamp; Type: TRIGGER; Schema: public; Owner: findmyride
 --
 
-CREATE TRIGGER set_timestamp BEFORE UPDATE ON public.user_devices FOR EACH ROW EXECUTE FUNCTION public.trigger_set_updated_at();
+CREATE TRIGGER set_timestamp BEFORE UPDATE ON public.user_sessions FOR EACH ROW EXECUTE FUNCTION public.trigger_set_updated_at();
 
 
 --
@@ -928,11 +936,11 @@ ALTER TABLE ONLY public.user2rooms
 
 
 --
--- Name: user_devices user_devices_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: findmyride
+-- Name: user_sessions user_sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: findmyride
 --
 
-ALTER TABLE ONLY public.user_devices
-    ADD CONSTRAINT user_devices_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+ALTER TABLE ONLY public.user_sessions
+    ADD CONSTRAINT user_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --

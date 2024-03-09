@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "370136940957",
+    "project_id": "findmyride-415001",
+    "storage_bucket": "findmyride-415001.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370136940957:android:0842005ed325f54fe56f74",
+        "android_client_info": {
+          "package_name": "app.findmyride"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBn8M91bJc0TYlazo5QvZiW0n8TUSEyS18"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

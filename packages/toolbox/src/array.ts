@@ -86,3 +86,21 @@ export const orderAs = <TOrder, T>(order: TOrder[], items: T[], selector: (t: T)
 
     return [...items].sort((a, b) => (map.get(selector(a)) ?? 0) - (map.get(selector(b)) ?? 0));
 };
+
+export const uniqueBy = <T>(items: T[], keySelector?: (item: T) => unknown) => {
+    keySelector ??= (t: T) => t;
+
+    const set = new Set();
+    return items.filter((x) => {
+        const key = keySelector?.(x);
+
+        if (set.has(key)) {
+            return false;
+        } else {
+            set.add(key);
+            return true;
+        }
+    });
+};
+
+export const range = (from: number, to: number) => [...Array(to - from)].map((_, i) => i + from);

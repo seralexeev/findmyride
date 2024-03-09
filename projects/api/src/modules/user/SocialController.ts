@@ -1,11 +1,9 @@
 import { SelectorShape } from '@untype/orm';
 import { raw } from '@untype/pg';
-import { array, assert, object, string, uuid } from '@untype/toolbox';
-import { InvalidOperationError } from 'packages/toolbox/src/error';
+import { InvalidOperationError, array, assert, object, string, uuid } from '@untype/toolbox';
 import { singleton } from 'tsyringe';
 import { z } from 'zod';
 import { File, Follow, GeoJsonSelector, RideImage, User, Users2Ride } from '../../entities';
-import { Context } from '../models/context';
 import { navigationAction } from '../models/shared';
 import { UserVm } from '../models/users';
 import { PageSchema, createPager } from '../models/utils';
@@ -13,6 +11,7 @@ import { NotificationService } from '../push/NotificationService';
 import { RidePreviewVm, RideService } from '../rides/RideService';
 import { ParticipantStatus } from '../rides/models';
 import { rpc } from '../rpc';
+import { Context } from '../rpc/models';
 
 @singleton()
 export class SocialController {
@@ -75,7 +74,7 @@ export class SocialController {
         },
     });
 
-    public findUsers = rpc({
+    public ['social/find_users'] = rpc({
         input: z.object({ query: z.string(), page: PageSchema }),
         resolve: async ({ ctx, input }) => {
             const pager = createPager(input.page, 25);
@@ -121,7 +120,7 @@ export class SocialController {
         },
     });
 
-    public changeFriendshipStatus = rpc({
+    public ['social/change_friendship_status'] = rpc({
         input: z.object({
             userId: z.string(),
             action: z.union([z.literal('follow'), z.literal('unfollow')]),
@@ -161,7 +160,7 @@ export class SocialController {
         },
     });
 
-    public getUserInfo = rpc({
+    public ['social/get_user_info'] = rpc({
         input: z.object({ id: z.string() }),
         resolve: async ({ ctx, input }) => {
             const [item, friendshipStatus] = await Promise.all([
@@ -210,7 +209,7 @@ export class SocialController {
         },
     });
 
-    public getUserPhotos = rpc({
+    public ['social/get_user_photos'] = rpc({
         input: z.object({ userId: z.string(), page: PageSchema }),
         resolve: async ({ ctx, input }) => {
             const items = await RideImage.find(ctx.t, {
@@ -223,7 +222,7 @@ export class SocialController {
         },
     });
 
-    public getFeed = rpc({
+    public ['social/get_feed'] = rpc({
         input: z.object({ page: PageSchema, type: z.string() }),
         resolve: async ({ ctx, input }) => {
             const pager = createPager(input.page, 25);
@@ -272,7 +271,7 @@ export class SocialController {
                 JOIN users AS u ON TRUE
                 WHERE TRUE
                     AND u.id = ${ctx.user.id}
-                    AND ST_DWithin (r.start_location, get_user_location(${ctx.user.id}, ${ctx.user.device.deviceId}), 5000)
+                    AND ST_DWithin (r.start_location, get_user_location(${ctx.user.id}, ${ctx.user.session.id}), 5000)
                     AND r.status = 'created'
 
                 UNION ALL

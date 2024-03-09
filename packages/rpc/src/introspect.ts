@@ -4,7 +4,7 @@ import { Endpoint, EndpointConfig } from './endpoint';
 import { Executor } from './executor';
 import { HttpMethod, HttpMethodSchema } from './types';
 
-type EndpointMeta = {
+export type EndpointMeta = {
     name: string;
     method: HttpMethod;
     regexp: RegExp;

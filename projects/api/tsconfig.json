@@ -2,15 +2,20 @@
     "extends": "../../tsconfig.common.json",
     "compilerOptions": {
         "composite": true,
+        "rootDir": "src",
         "outDir": "dist",
         "tsBuildInfoFile": "dist/.tsbuildinfo"
     },
+    "include": ["src"],
     "references": [
         {
             "path": "../../packages/worker"
         },
         {
             "path": "../../packages/pg"
+        },
+        {
+            "path": "../../packages/migrations"
         },
         {
             "path": "../../packages/orm"

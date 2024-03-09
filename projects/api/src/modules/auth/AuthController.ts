@@ -1,19 +1,19 @@
-import { Transaction } from '@untype/pg';
-import { BadRequestError, InvalidOperationError, UnauthorizedError, assert, random } from '@untype/toolbox';
+import { RedirectResponse } from '@untype/rpc';
+import { ForbiddenError, assert, random, string, uuid } from '@untype/toolbox';
 import appleSignIn from 'apple-signin-auth';
 import Axios from 'axios';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import qs from 'qs';
 import { singleton } from 'tsyringe';
 import { z } from 'zod';
 import { Config } from '../../config';
-import { User, UserDevice } from '../../entities';
+import { User, UserSession } from '../../entities';
 import { FileService } from '../files/FileService';
 import { StravaService } from '../geo/StravaService';
-import { ActionByType } from '../models/actions';
-import { AuthAction, NotificationStatus } from '../models/users';
-import { rpc } from '../rpc';
-import { DeviceInfo } from '../rpc/types';
+import { NotificationStatus } from '../models/users';
+import { rest, rpc } from '../rpc';
+import { Context } from '../rpc/models';
 import { RandomUserService } from '../user/RandomUserService';
 
 @singleton()
@@ -25,79 +25,116 @@ export class AuthController {
         private config: Config,
     ) {}
 
+    public ['GET /auth/callback'] = rest({
+        anonymous: true,
+        resolve: ({ req }) => {
+            return new RedirectResponse('findmyride://findmyride.app/auth/callback?' + qs.stringify(req.query));
+        },
+    });
+
     public ['auth/anonymous_login'] = rpc({
         anonymous: true,
-        resolve: async ({ ctx }) => {
+        resolve: async ({ ctx, res }) => {
             const { avatarId, name, slug } = await this.randomUserService.getRandomUser(ctx.t);
 
             const newUser = await User.create(ctx.t, {
                 selector: ['id'],
                 item: {
                     isAnonymous: true,
-                    email: `${slug}.user@findmyride.cc`,
+                    email: `${slug}.user@findmyride.app`,
                     slug,
                     name,
                     avatarId,
                 },
             });
 
-            return this.generateTokens(ctx.t, newUser.id, ctx.device);
+            const token = await this.createSession(ctx, newUser.id);
+            res.header('Authorization', `Bearer ${token}`);
+
+            return { isNewUser: true };
         },
     });
 
     public ['auth/login'] = rpc({
         anonymous: true,
         input: LoginSchema,
-        resolve: async ({ ctx, input }) => {
-            if (!ctx.device) {
-                throw new BadRequestError('Missing device info');
-            }
+        resolve: async ({ ctx, res, input }) => {
+            const info = await this.getProviderProfile(input);
 
-            const { email, name, avatarUrl } = await this.getProviderProfile(input);
-            let user = await User.findFirst(ctx.t, {
-                filter: { email: { equalTo: email } },
+            const { isNewUser, user } = await User.findFirst(ctx.t, {
+                filter: { email: { equalTo: info.email } },
                 selector: ['id', 'isDeleted'],
-            });
+            }).then(async (user) => ({
+                isNewUser: !user,
+                user: user ?? (await this.createUser(ctx, info)),
+            }));
 
             if (user && user.isDeleted) {
-                throw new InvalidOperationError('Account is deleted');
+                throw new ForbiddenError('Account is deleted');
             }
 
-            const isNewUser = !user;
+            const token = await this.createSession(ctx, user.id);
+            res.header('Authorization', `Bearer ${token}`);
 
-            if (!user) {
-                let slug = email
-                    .substring(0, email.lastIndexOf('@'))
-                    .replace(/[^A-Za-z0-9_]/g, '')
-                    .toLowerCase();
-
-                while (await User.exists(ctx.t, { filter: { slug: { equalTo: slug } } })) {
-                    slug += random.int(1, 9);
-                }
-
-                const avatar = avatarUrl ? await this.fileService.upload({ url: avatarUrl }) : undefined;
-
-                user = await User.create(ctx.t, {
-                    item: {
-                        name: name || this.randomUserService.getRandomName(),
-                        avatarId: avatar?.file.id,
-                        email,
-                        slug,
-                    },
-                    selector: ['id', 'isDeleted'],
-                });
-            }
-
-            return {
-                ...(await this.generateTokens(ctx.t, user.id, ctx.device)),
-                isNewUser,
-            };
+            return { isNewUser };
         },
     });
 
-    private getProviderProfile = (
-        input: z.infer<typeof LoginSchema>,
-    ): Promise<{ name: string; email: string; avatarUrl?: string | null }> => {
+    private createSession = async (ctx: Context<false>, userId: string) => {
+        const tokenId = uuid.v4();
+        const sessionId = uuid.v4();
+        const token = jwt.sign(
+            {
+                sub: userId,
+                tokenId,
+                sessionId,
+            },
+            this.config.auth.jwt.secret,
+            {
+                expiresIn: this.config.auth.jwt.tokenExpiresIn,
+                issuer: this.config.auth.jwt.issuer,
+                audience: this.config.auth.jwt.audience,
+            },
+        );
+
+        await UserSession.create(ctx.t, {
+            item: {
+                id: sessionId,
+                userId,
+                tokenId,
+            },
+        });
+
+        return token;
+    };
+
+    private createUser = async (
+        ctx: Context<false>,
+        { name, email, avatarUrl }: { name: string | null | undefined; email: string; avatarUrl?: string | null },
+    ) => {
+        let slug = email
+            .substring(0, email.lastIndexOf('@'))
+            .replace(/[^A-Za-z0-9_]/g, '')
+            .toLowerCase();
+
+        while (await User.exists(ctx.t, { filter: { slug: { equalTo: slug } } })) {
+            slug += random.int(1, 9);
+        }
+
+        const avatar = avatarUrl ? await this.fileService.upload(ctx, 'images', { url: avatarUrl }) : undefined;
+
+        return await User.create(ctx.t, {
+            item: {
+                name: string.trimToNull(name) ?? this.randomUserService.getRandomName(),
+                avatarId: avatar?.file.id,
+                email,
+                slug,
+            },
+            selector: ['id', 'isDeleted'],
+        });
+    };
+
+    private getProviderProfile = (input: z.infer<typeof LoginSchema>) => {
         switch (input.provider) {
             case 'google':
                 return this.getGoogleProfile(input.payload);
@@ -111,12 +148,16 @@ export class AuthController {
     };
 
     private getGoogleProfile = async (payload: { idToken: string }) => {
-        const { email, name, picture } = await Axios.request<{ picture?: string; name: string; email: string }>({
+        const data = await Axios.request({
             url: 'https://oauth2.googleapis.com/tokeninfo',
             params: { id_token: payload.idToken },
-        }).then((x) => x.data);
+        }).then((x) => GoogleProfile.parse(x.data));
 
-        return { name, email, avatarUrl: picture };
+        return {
+            email: data.email,
+            name: data.name,
+            avatarUrl: data.picture ?? null,
+        };
     };
 
     private getAppleProfile = async (payload: {
@@ -165,86 +206,26 @@ export class AuthController {
         },
     });
 
-    public ['auth/tokens'] = rpc({
-        anonymous: true,
-        input: z.object({ refreshToken: z.string().nullable() }),
-        resolve: async ({ ctx, input }) => {
-            const decoded = this.validateRefreshToken(input.refreshToken ?? '');
-            const userId = decoded.sub;
-
-            const device = await UserDevice.findByPk(ctx.t, {
-                pk: { id: decoded.deviceId },
-                selector: ['refreshToken', 'deviceInfo'],
-            });
-
-            if (!device || device.refreshToken !== input.refreshToken) {
-                throw new UnauthorizedError('Invalid refresh token');
-            }
-
-            return this.generateTokens(ctx.t, userId, ctx.device ?? device.deviceInfo);
-        },
-    });
-
     public ['auth/logout'] = rpc({
         input: z.object({ deleteAccount: z.boolean().optional() }).optional(),
-        resolve: async ({ ctx, input }): Promise<ActionByType<AuthAction, '@auth/REMOVE_SECURITY_TOKENS'>> => {
-            const devices = await UserDevice.find(ctx.t, {
+        resolve: async ({ ctx, input }) => {
+            const devices = await UserSession.find(ctx.t, {
                 filter: {
-                    id: { equalTo: ctx.device.deviceId },
+                    id: { equalTo: ctx.user.session.id },
                     userId: { equalTo: ctx.user.id },
                 },
                 selector: ['id'],
             });
 
             for (const device of devices) {
-                await UserDevice.delete(ctx.t, { pk: { id: device.id } });
+                await UserSession.delete(ctx.t, { pk: { id: device.id } });
             }
 
             if (input?.deleteAccount) {
                 await User.update(ctx.t, { pk: { id: ctx.user.id }, patch: { isDeleted: true } });
             }
-
-            return {
-                type: '@auth/REMOVE_SECURITY_TOKENS',
-            };
         },
     });
-
-    private generateTokens = async (
-        t: Transaction,
-        userId: string,
-        deviceInfo: DeviceInfo,
-    ): Promise<ActionByType<AuthAction, '@auth/SET_SECURITY_TOKENS'>> => {
-        const accessToken = jwt.sign({ sub: userId }, this.config.auth.jwt.secret, {
-            expiresIn: this.config.auth.jwt.accessTokenExpiresIn,
-            issuer: this.config.auth.jwt.issuer,
-        });
-
-        const refreshToken = jwt.sign({ sub: userId, deviceId: deviceInfo.deviceId }, this.config.auth.jwt.secret, {
-            expiresIn: this.config.auth.jwt.refreshTokenExpiresIn,
-            issuer: this.config.auth.jwt.issuer,
-        });
-
-        await UserDevice.updateOrCreate(t, {
-            pk: { id: deviceInfo.deviceId },
-            selector: ['updatedAt'],
-            item: { userId, refreshToken, deviceInfo },
-        });
-
-        return {
-            type: '@auth/SET_SECURITY_TOKENS',
-            payload: { userId, accessToken, refreshToken },
-        };
-    };
-
-    private validateRefreshToken = (refreshToken: string) => {
-        try {
-            jwt.verify(refreshToken, this.config.auth.jwt.secret, { issuer: this.config.auth.jwt.issuer });
-            return jwt.decode(refreshToken, { json: true }) as { sub: string; deviceId: string };
-        } catch (cause) {
-            throw new UnauthorizedError('Invalid token', { cause });
-        }
-    };
 
     public ['auth/fcm_token'] = rpc({
         input: z.object({
@@ -252,13 +233,19 @@ export class AuthController {
             status: NotificationStatus,
         }),
         resolve: async ({ ctx, input }) => {
-            await UserDevice.update(ctx.t, {
-                pk: { id: ctx.device.deviceId },
-                patch: { fcmToken: input.fcmToken, notificationStatus: input.status },
-            });
+            // await UserSession.update(ctx.t, {
+            //     pk: { id: ctx.device.id },
+            //     patch: { fcmToken: input.fcmToken, notificationStatus: input.status },
+            // });
         },
     });
 }
+
+const GoogleProfile = z.object({
+    email: z.string(),
+    picture: z.string().nullish(),
+    name: z.string().nullish(),
+});
 
 const LoginSchema = z.union([
     z.object({

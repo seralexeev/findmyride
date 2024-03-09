@@ -109,7 +109,7 @@ export class GqlQueryBuilder {
 
         if (!field) {
             throw new InternalError(`Field ${name} not found in ${operation}`, {
-                data: { operation, name, query },
+                internal: { operation, name, query },
             });
         }
 
@@ -127,7 +127,7 @@ export class GqlQueryBuilder {
             const cause = res.errors[0]?.originalError;
             const message = cause?.message ?? (res.errors[0]?.message || 'OrmError');
             throw new InternalError(message, {
-                data: { errors: res.errors, query: print(document), variables },
+                internal: { errors: res.errors, query: print(document), variables },
                 cause,
             });
         }
@@ -157,7 +157,7 @@ export class GqlQueryBuilder {
                     const arg = queryField.args.find((x) => x.name === argName);
                     if (!arg) {
                         throw new InternalError(`Argument ${argName} not found in ${queryField.name}`, {
-                            data: { query },
+                            internal: { query },
                         });
                     }
 
@@ -192,7 +192,7 @@ export class GqlQueryBuilder {
                     const field = fields[selectorName];
                     if (!field) {
                         throw new InternalError(`Field ${selectorName} not found in ${queryField.name}`, {
-                            data: { query, selectorName, selectorValue },
+                            internal: { query, selectorName, selectorValue },
                         });
                     }
 
@@ -276,7 +276,7 @@ export class GqlQueryBuilder {
 
         if (!isObjectType(type)) {
             throw new InternalError('Not an object type', {
-                data: { type },
+                internal: { type },
             });
         }
 

@@ -1,0 +1,16 @@
+{
+    "extends": "../../tsconfig.common.json",
+    "compilerOptions": {
+        "lib": ["DOM"],
+        "jsx": "react-jsx",
+        "rootDir": "src",
+        "outDir": "dist",
+        "tsBuildInfoFile": "dist/.tsbuildinfo"
+    },
+    "include": ["src"],
+    "references": [
+        {
+            "path": "../toolbox"
+        }
+    ]
+}

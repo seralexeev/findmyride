@@ -7,7 +7,7 @@ import admin from 'firebase-admin';
 import { BaseMessage, Message } from 'firebase-admin/messaging';
 import { singleton } from 'tsyringe';
 import { Config } from '../../config';
-import { UserDevice } from '../../entities';
+import { UserSession } from '../../entities';
 import { PushNotification } from './NotificationWorker';
 
 @singleton()
@@ -40,10 +40,10 @@ export class NotificationService {
         filter,
         notification,
     }: {
-        filter: Filter<UserDevice>;
+        filter: Filter<UserSession>;
         notification: PushNotification;
     }) => {
-        const devices = await UserDevice.find(this.pg, {
+        const devices = await UserSession.find(this.pg, {
             selector: ['fcmToken', 'userId'],
             filter: { ...filter, fcmToken: { isNull: false } },
         });

@@ -14,7 +14,7 @@ const DecimalScalar = new GraphQLScalarType({
         }
 
         throw new InternalError('Unable to parse Big literal', {
-            data: { ast },
+            internal: { ast },
         });
     },
 });

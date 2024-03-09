@@ -1,6 +1,6 @@
 import { BoundingBox, LineString, Point } from '@untype/geo';
 import { Field, QueryableField } from '@untype/orm';
-import { FileMeta, SizedImage } from '../modules/files/models';
+import { FileMeta } from '../modules/files/models';
 import { NotificationStatus } from '../modules/models/users';
 import {
     BikeType,
@@ -31,12 +31,13 @@ export type OverrideMap = FieldsOverride<{
         bbox: Field<BoundingBox | null, BoundingBox | null | undefined>;
     };
     File: {
-        imageSizes: Field<SizedImage | null, SizedImage | null | undefined>;
-        meta: Field<FileMeta, FileMeta>;
+        meta: Field<FileMeta, FileMeta | undefined>;
     };
-    UserDevice: {
+    PresignedUrl: {
+        meta: Field<FileMeta, FileMeta | undefined>;
+    };
+    UserSession: {
         notificationStatus: Field<NotificationStatus | null, NotificationStatus | null | undefined>;
-        pushAuthorizationStatus: Field<NotificationStatus | null, NotificationStatus | null | undefined>;
     };
     User: {
         level: Field<RiderLevel, RiderLevel | undefined>;

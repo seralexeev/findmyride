@@ -5,7 +5,7 @@
  */
 
 import { ApplyOverride, ConnectionField, Field, ForeignField, PrimaryKey, QueryableField, QueryableListField } from '@untype/orm';
-import type { ChatRoom, File, Follow, GeographyPoint, GpxTrack, Message, Ride, RideImage, StravaAccount, User2Room, UserDevice, Users2Ride } from '.';
+import type { ChatRoom, File, Follow, GeographyPoint, GpxTrack, Message, Ride, RideImage, StravaAccount, User2Room, Users2Ride, UserSession } from '.';
 import { Point } from '@untype/geo';
 import { OverrideMap } from '../override';
 import { UserAccessor } from '../accessors/UserAccessor';
@@ -50,10 +50,10 @@ export interface User extends ApplyOverride<{
     ridesByUsers2RideUserIdAndRideIdList: QueryableListField<Ride>;
     strava: ForeignField<StravaAccount | null>;
     user2Rooms: QueryableListField<User2Room>;
-    userDevices: QueryableListField<UserDevice>;
     users2Rides: QueryableListField<Users2Ride>;
     usersByFollowFollowingIdAndUserIdList: QueryableListField<User>;
     usersByFollowUserIdAndFollowingIdList: QueryableListField<User>;
+    userSessions: QueryableListField<UserSession>;
 
     createdAt: Field<Date, Date | undefined>;
     updatedAt: Field<Date, Date | undefined>;
@@ -75,10 +75,10 @@ export interface User extends ApplyOverride<{
     ridesByRideImageUserIdAndRideId: ConnectionField<Ride>;
     ridesByUsers2RideUserIdAndRideId: ConnectionField<Ride>;
     user2RoomsConnection: ConnectionField<User2Room>;
-    userDevicesConnection: ConnectionField<UserDevice>;
     users2RidesConnection: ConnectionField<Users2Ride>;
     usersByFollowFollowingIdAndUserId: ConnectionField<User>;
     usersByFollowUserIdAndFollowingId: ConnectionField<User>;
+    userSessionsConnection: ConnectionField<UserSession>;
 }, OverrideMap['User']> { }
 
 export const User = new UserAccessor();

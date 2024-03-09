@@ -3,10 +3,10 @@ import { addMinutes } from 'date-fns';
 import { singleton } from 'tsyringe';
 import { Ride } from '../../entities';
 import { schedule } from '../../worker';
-import { Context } from '../models/context';
 import { navigationAction } from '../models/shared';
 import { checkPermission } from '../models/utils';
 import { getRidePushTitle } from '../push/utils';
+import { Context } from '../rpc/models';
 
 @singleton()
 export class RideOperationsService {

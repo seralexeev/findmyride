@@ -1,0 +1,45 @@
+$schema: 'https://moonrepo.dev/schemas/project.json'
+
+tasks:
+  android:
+    command: 'yarn react-native run-android'
+    local: true
+    options:
+      persistent: false
+      outputStyle: buffer
+
+  ios:
+    command: 'yarn react-native run-ios'
+    local: true
+    options:
+      persistent: false
+      outputStyle: buffer
+
+  dev:
+    command: 'yarn react-native start'
+    deps:
+      - '^:tsc'
+    local: true
+
+  dev_ios_device:
+    command: 'yarn react-native run-ios --device'
+    inputs:
+      - 'package.json'
+      - 'ios/Podfile'
+    local: true
+    deps:
+      - '~:pod_install'
+
+  pod_install:
+    command: 'pod install --repo-update --project-directory=ios'
+    platform: system
+    local: true
+    options:
+      persistent: false
+
+  match_dev:
+    command: 'bundle exec fastlane match development'
+    local: true
+    platform: system
+    options:
+      persistent: false

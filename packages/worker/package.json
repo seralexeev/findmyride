@@ -6,12 +6,12 @@
         }
     },
     "devDependencies": {
-        "type-fest": "4.10.2"
+        "type-fest": "4.11.1"
     },
     "dependencies": {
         "@untype/pg": "workspace:*",
         "@untype/toolbox": "workspace:*",
-        "graphile-worker": "0.16.2",
+        "graphile-worker": "0.16.4",
         "zod": "3.22.4"
     }
 }

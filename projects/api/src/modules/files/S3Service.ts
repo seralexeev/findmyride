@@ -1,82 +1,76 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Logger as AWSLogger } from '@aws-sdk/types/dist-types/logger';
 import { Logger } from '@untype/logger';
 import { InternalError } from '@untype/toolbox';
 import { singleton } from 'tsyringe';
-
-export type S3ServiceConfig = {
-    region?: string;
-    endpoint?: string;
-    forcePathStyle?: boolean;
-    credentials: { accessKeyId: string; secretAccessKey: string };
-};
-
-type UploadFileArgs = {
-    key: string;
-    mimeType: string;
-    data: Buffer;
-    bucket: string;
-};
+import { Config } from '../../config';
 
 @singleton()
 export class S3Service {
     private client;
-    private forcePathStyle;
 
     public constructor(
         logger: Logger,
-        private config?: S3ServiceConfig,
+        private config: Config,
     ) {
-        this.forcePathStyle = config?.forcePathStyle ?? false;
-        this.client = new S3Client({ ...config, logger: new S3Logger(logger) });
+        this.client = new S3Client({
+            logger: new S3Logger(logger),
+            endpoint: this.config.storage.endpoint,
+            forcePathStyle: true,
+            credentials: {
+                accessKeyId: this.config.storage.credentials.accessKeyId,
+                secretAccessKey: this.config.storage.credentials.secretAccessKey,
+            },
+        });
     }
 
-    public async uploadFile({ data, key, mimeType, bucket }: UploadFileArgs) {
+    public uploadFile = async ({ buffer, key, mimeType }: { key: string; mimeType: string; buffer: Buffer }) => {
         try {
             const command = new PutObjectCommand({
-                Bucket: bucket,
+                Bucket: this.config.storage.bucket,
                 Key: key,
                 ContentType: mimeType,
-                Body: data,
+                Body: buffer,
             });
 
             await this.client.send(command);
 
             return {
-                url: this.forcePathStyle
-                    ? await this.buildPathStyleUrl(bucket, key)
-                    : await this.buildDomainStyleUrl(bucket, key),
+                url: `${this.config.storage.endpoint}/${this.config.storage.bucket}/${key}`,
             };
         } catch (cause) {
-            throw new InternalError('An error has occurred while uploading file', { cause });
+            throw new InternalError('An error has occurred while uploading file', {
+                internal: { key, mimeType },
+                cause,
+            });
         }
-    }
-
-    private buildDomainStyleUrl = async (bucket: string, key: string) => {
-        const { hostname, port, protocol } = await this.getUrlParts();
-
-        return `${protocol}//${bucket}.${hostname}${port}/${key}`;
     };
 
-    private buildPathStyleUrl = async (bucket: string, key: string) => {
-        const { hostname, port, protocol } = await this.getUrlParts();
-
-        return `${protocol}//${hostname}${port}/${bucket}/${key}`;
-    };
-
-    private getUrlParts = async () => {
-        const { url: endpoint } = this.client.config.endpointProvider({
-            Region: await this.client.config.region(),
-            Endpoint: this.config?.endpoint,
+    public getPresignedUrl = (key: string) => {
+        const command = new PutObjectCommand({
+            Bucket: this.config.storage.bucket,
+            Key: key,
         });
 
-        const port = endpoint.port && endpoint.port !== '433' ? `:${endpoint.port}` : '';
+        return getSignedUrl(this.client, command, {
+            expiresIn: 5 * 60,
+        });
+    };
 
-        return {
-            port,
-            protocol: endpoint.protocol,
-            hostname: endpoint.hostname,
-        };
+    public getFileBuffer = async (key: string) => {
+        const command = new GetObjectCommand({
+            Bucket: this.config.storage.bucket,
+            Key: key,
+        });
+
+        const response = await this.client.send(command);
+        const array = await response.Body?.transformToByteArray();
+        if (!array) {
+            throw new InternalError('Unable to transform file to byte array');
+        }
+
+        return Buffer.from(array);
     };
 }
 

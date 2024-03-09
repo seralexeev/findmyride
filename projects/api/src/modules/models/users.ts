@@ -17,7 +17,3 @@ export const NotificationStatus = z.union([
     z.literal('granted'),
     z.literal('limited'),
 ]);
-
-export const formatSlug = (slug: string) => {
-    return `@${slug}`;
-};

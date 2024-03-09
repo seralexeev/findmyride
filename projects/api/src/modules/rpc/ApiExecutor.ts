@@ -1,17 +1,17 @@
-import { Point } from '@untype/geo';
 import { Pg } from '@untype/pg';
 import { ExpressExecutor } from '@untype/rpc-express';
-import { BadRequestError, UnauthorizedError, object, uuid } from '@untype/toolbox';
-import { camelCase } from 'change-case';
-import { Request } from 'express';
+import { UnauthorizedError, assert, result, uuid } from '@untype/toolbox';
+import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import ms from 'ms';
 import { singleton } from 'tsyringe';
 import { Config } from '../../config';
-import { User } from '../../entities';
-import { ApiContext, ApiUser, DeviceInfo } from './types';
+import { User, UserSession } from '../../entities';
+import { TokenPayload } from '../auth/models';
+import { ApiUser, Context } from './models';
 
 @singleton()
-export class ApiExecutor extends ExpressExecutor<ApiContext, ApiUser> {
+export class ApiExecutor extends ExpressExecutor<Context<false>, ApiUser> {
     public constructor(
         private pg: Pg,
         private config: Config,
@@ -19,36 +19,20 @@ export class ApiExecutor extends ExpressExecutor<ApiContext, ApiUser> {
         super();
     }
 
-    public override invoke = async ({ resolve, res, req, user }: typeof this.types.invoke) => {
-        const device = this.getDeviceInfo(req) ?? {
-            deviceId: uuid.v4(),
-            type: 'web',
-        };
-
-        let location: Point | null = null;
-        if (user) {
-            if (!device || !device.deviceId) {
-                throw new BadRequestError('Device Id is missing');
-            }
-
-            [location = null] = user
-                ? await this.pg.sql<Point>`SELECT ST_AsGeoJSON(get_user_location(${user.id}, ${device.deviceId}))`
-                : [];
-        }
-
+    public override invoke = async ({ resolve, user }: typeof this.types.invoke) => {
         return this.pg.transaction(async (t) => {
-            return await resolve({ device, t, user });
+            return await resolve({ t, user });
         });
     };
 
-    public override auth = async (ctx: typeof this.types.auth) => {
-        const id = this.getUserId(ctx.req);
-        if (!id) {
+    public override auth = async ({ req, res }: typeof this.types.auth) => {
+        const session = await this.getSession(req, res);
+        if (!session) {
             return null;
         }
 
         const user = await User.findByPk(this.pg, {
-            pk: { id },
+            pk: { id: session.userId },
             selector: {
                 id: true,
                 name: true,
@@ -57,45 +41,100 @@ export class ApiExecutor extends ExpressExecutor<ApiContext, ApiUser> {
         });
 
         if (!user) {
-            return null;
+            throw new UnauthorizedError('User not found');
         }
 
         return {
-            ...object.pick(user, ['id', 'name', 'isAnonymous']),
-            // location: user.location?.geojson ?? null,
-        } as any; // hack for deviceId
+            id: user.id,
+            name: user.name,
+            isAnonymous: user.isAnonymous,
+            session,
+        };
     };
 
-    private getUserId = (req: Request) => {
-        const accessToken = req.headers.authorization?.split(' ')[1] || null;
-        if (!accessToken) {
+    private getSession = async (req: Request, res: Response) => {
+        if (req.headers.authorization == null) {
             return null;
         }
 
-        try {
-            jwt.verify(accessToken, this.config.auth.jwt.secret, { issuer: this.config.auth.jwt.issuer });
-            const sub = jwt.decode(accessToken, { json: true })?.sub;
-            if (!sub) {
-                throw new UnauthorizedError('Invalid token', { cause: 'Sub is missing' });
-            }
-
-            return sub;
-        } catch (cause) {
-            throw new UnauthorizedError('Invalid token', { cause });
+        const token = req.headers.authorization.split('Bearer ')[1];
+        if (!token) {
+            throw new UnauthorizedError('Invalid token', {
+                internal: 'Token is missing',
+            });
         }
-    };
 
-    private getDeviceInfo = (req: Request): DeviceInfo | null => {
-        const di = Object.entries(req.headers).reduce((acc, [key, value]) => {
-            if (key.startsWith('x-di-')) {
-                const name = camelCase(key.substring(5));
-                if (name && value) {
-                    acc[name] = value;
-                }
-            }
-            return acc;
-        }, {} as any);
+        const verifiedPayload = assert.noexept(() => {
+            return jwt.verify(token, this.config.auth.jwt.secret, {
+                issuer: this.config.auth.jwt.issuer,
+                audience: this.config.auth.jwt.audience,
+            });
+        });
 
-        return Object.keys(di).length ? di : null;
+        if (result.isError(verifiedPayload)) {
+            throw new UnauthorizedError('Invalid token', {
+                cause: verifiedPayload.cause,
+            });
+        }
+
+        const rawPayload = TokenPayload.safeParse(verifiedPayload);
+        if (!rawPayload.success) {
+            throw new UnauthorizedError('Invalid token', {
+                internal: "Token doesn't match the schema",
+                cause: rawPayload.error,
+            });
+        }
+
+        const payload = rawPayload.data;
+
+        const session = await UserSession.findByPk(this.pg, {
+            pk: { id: payload.sessionId },
+            selector: ['id', 'userId', 'tokenId'],
+        });
+
+        if (!session) {
+            throw new UnauthorizedError('Invalid token', {
+                internal: 'Session not found',
+            });
+        }
+
+        if (session.tokenId !== payload.tokenId) {
+            throw new UnauthorizedError('Invalid token', {
+                internal: 'Token mismatch',
+            });
+        }
+
+        if (session.userId !== payload.sub) {
+            throw new UnauthorizedError('Invalid token', {
+                internal: 'User mismatch',
+            });
+        }
+
+        if (payload.exp * 1000 - Date.now() < ms(this.config.auth.jwt.slidingTokenWindow)) {
+            const tokenId = uuid.v4();
+            const newToken = jwt.sign(
+                {
+                    sub: payload.sub,
+                    tokenId,
+                    sessionId: payload.sessionId,
+                },
+                this.config.auth.jwt.secret,
+                {
+                    expiresIn: this.config.auth.jwt.tokenExpiresIn,
+                    issuer: this.config.auth.jwt.issuer,
+                    audience: this.config.auth.jwt.audience,
+                },
+            );
+
+            await UserSession.update(this.pg, {
+                pk: { id: session.id },
+                patch: { tokenId },
+            });
+
+            session.tokenId = tokenId;
+            res.header('Authorization', `Bearer ${newToken}`);
+        }
+
+        return session;
     };
 }

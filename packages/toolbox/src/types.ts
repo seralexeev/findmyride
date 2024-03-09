@@ -13,3 +13,5 @@ export type AllKeys<T> = T extends any ? keyof T : never;
 export type Merge<T extends object> = {
     [K in AllKeys<T>]: PickType<T, K>;
 };
+
+export type Simplify<T> = { [K in keyof T]: T[K] } & {};

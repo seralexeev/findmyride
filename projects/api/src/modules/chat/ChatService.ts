@@ -1,6 +1,6 @@
 import { array } from '@untype/toolbox';
 import { singleton } from 'tsyringe';
-import { Context } from '../models/context';
+import { Context } from '../rpc/models';
 
 @singleton()
 export class ChatService {

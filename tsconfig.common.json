@@ -18,6 +18,8 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "noUncheckedIndexedAccess": true,
-        "noImplicitOverride": true
+        "noImplicitOverride": true,
+        "resolveJsonModule": true,
+        "allowArbitraryExtensions": true
     }
 }

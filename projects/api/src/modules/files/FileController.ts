@@ -1,4 +1,4 @@
-import { BadRequestError } from '@untype/toolbox';
+import { fileInput } from '@untype/rpc';
 import { singleton } from 'tsyringe';
 import { rpc } from '../rpc';
 import { FileService } from './FileService';
@@ -7,16 +7,13 @@ import { FileService } from './FileService';
 export class FileController {
     public constructor(private files: FileService) {}
 
-    public ['file/upload'] = rpc({
-        resolve: async ({ ctx, req }) => {
-            if (!req.file) {
-                throw new BadRequestError('File is required');
-            }
-
-            const { file } = await this.files.upload({
-                buffer: req.file.buffer,
-                mimeType: req.file.mimetype,
-                meta: { originalName: req.file.originalname, userId: ctx.user.id },
+    public ['file/upload_image'] = rpc({
+        input: fileInput,
+        resolve: async ({ ctx, input }) => {
+            const { file } = await this.files.upload(ctx, 'images', {
+                buffer: input.buffer,
+                mimeType: input.mimetype,
+                meta: { originalName: input.originalname, userId: ctx.user.id },
             });
 
             return file;

@@ -1,0 +1,73 @@
+{
+    "rfc": {
+        "prefix": ["rfc"],
+        "body": [
+            "import { FC } from 'react';\n\ntype ${TM_FILENAME_BASE}Props = {\n\n}\n\nexport const ${TM_FILENAME_BASE}: FC<${TM_FILENAME_BASE}Props> = (props) => {\n    return $2\n}",
+        ],
+    },
+    "rpc": {
+        "prefix": ["controller"],
+        "body": [
+            "import { singleton } from 'tsyringe';",
+            "import { rpc } from '../rpc';",
+            "import { z } from 'zod';",
+            "",
+            "@singleton()",
+            "export class ${TM_FILENAME_BASE} {",
+            "    public ['$1'] = rpc({",
+            "        input: z.object({",
+            "        }),",
+            "        resolve: async ({ ctx, input }) => {",
+            "            $2",
+            "        },",
+            "    });",
+            "}",
+        ],
+    },
+    "endpoint": {
+        "prefix": ["endpoint"],
+        "body": [
+            "public $1 = rpc({",
+            "    input: z.object({",
+            "        $2",
+            "    }),",
+            "    resolve: async ({ ctx, input }) => {",
+            "        $3",
+            "    },",
+            "});",
+        ],
+    },
+    "context": {
+        "prefix": ["context"],
+        "body": [
+            "import { createContext, FC, ReactNode, useMemo } from 'react';",
+            "",
+            "export const [use$1, Provider] = createUseContext<$2>('$TM_FILENAME_BASE');",
+            "",
+            "export const $TM_FILENAME_BASE: FC<{ children: ReactNode }> = ({ children }) => {",
+            "    const value = useMemo(() => ({}), []);",
+            "",
+            "    return <Provider value={value} children={children} />;",
+            "};",
+        ],
+    },
+    "createtable": {
+        "prefix": ["createtable"],
+        "body": [
+            "await t.sql`",
+            "    CREATE TABLE IF NOT EXISTS $1 (",
+            "        id uuid PRIMARY KEY DEFAULT uuid_generate_v7(),",
+            "        $2,",
+            "        updated_at timestamptz NOT NULL DEFAULT clock_timestamp(),",
+            "        created_at timestamptz NOT NULL DEFAULT clock_timestamp()",
+            "    )",
+            "`;",
+            "",
+            "await t.sql`CREATE TRIGGER $1_updated_at BEFORE UPDATE ON $1 FOR EACH ROW EXECUTE PROCEDURE trigger_set_updated_at()`;",
+        ],
+    },
+    "ctor": {
+        "prefix": ["ctor"],
+        "body": ["public constructor($1) {", "    $2", "}"],
+    },
+}

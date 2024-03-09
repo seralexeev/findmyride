@@ -11,7 +11,7 @@ export class SqlFragment {
         const [firstFragment] = strings;
         if (firstFragment === undefined) {
             throw new InternalError('SqlFragment must have at least one string', {
-                data: { strings, values },
+                internal: { strings, values },
             });
         }
 

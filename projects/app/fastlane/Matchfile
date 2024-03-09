@@ -1,0 +1,3 @@
+git_url("git@github.com:seralexeev/findmyride-match.git")
+storage_mode("git")
+type("development")

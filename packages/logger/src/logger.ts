@@ -1,4 +1,5 @@
-import { LoggerType, UnreachableError, assert, json } from '@untype/toolbox';
+import { LoggerType, UnreachableError, assert } from '@untype/toolbox';
+import { json } from '@untype/toolbox/node';
 import { gray, green, red, yellow } from 'colorette';
 import yaml from 'js-yaml';
 import { env } from 'node:process';
@@ -44,6 +45,10 @@ export class Logger implements LoggerType {
         }
 
         data = this.jsonConverter.convert(data);
+        if (data != null && typeof data === 'object' && Object.keys(data).length === 0) {
+            data = undefined;
+        }
+
         const date = new Date();
 
         if (this.pretty === 'none') {
@@ -142,7 +147,7 @@ export type LoggerOptions = {
     jsonConverter?: JsonConverter;
 };
 
-export const DefaultLogger = new Logger({
+export const logger = new Logger({
     level: 'debug',
     pretty: env.NODE_ENV === 'production' ? 'json' : 'yaml',
 });

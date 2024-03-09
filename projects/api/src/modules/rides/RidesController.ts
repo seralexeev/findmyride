@@ -1,11 +1,10 @@
 import { BoundingBox, Point, Position } from '@untype/geo';
+import { raw } from '@untype/pg';
 import { NotFoundError, array, object } from '@untype/toolbox';
 import { addMinutes, format } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
-import { orderAs, reduceBy } from 'packages/toolbox/src/array';
-import { pick } from 'packages/toolbox/src/object';
 import { singleton } from 'tsyringe';
-import { literal, z } from 'zod';
+import { z } from 'zod';
 import { File, GeoJsonSelector, Ride, User, Users2Ride } from '../../entities';
 import { schedule } from '../../worker';
 import { DateSchema, PageSchema, checkPermission, createPager } from '../models/utils';
@@ -28,7 +27,7 @@ export class RidesController {
         },
     });
 
-    public ['rider/update'] = rpc({
+    public ['ride/update'] = rpc({
         input: UpdateRide,
         resolve: async ({ ctx, input }) => {
             const ride = await Ride.findByPkOrError(ctx.t, {
@@ -44,11 +43,11 @@ export class RidesController {
                 },
             });
 
-            checkPermission(ctx.user, ride.organizerId, 'You are not an organizer of the ride');
+            checkPermission(ctx, ride.organizerId, 'You are not an organizer of the ride');
 
             const staticMapId =
                 input.finish || input.start
-                    ? await this.rideService.getStaticMapId({
+                    ? await this.rideService.getStaticMapId(ctx, {
                           track: ride.track?.geojson,
                           startCoordinates: input.start?.location.coordinates ?? ride.startLocation.geojson.coordinates,
                           finishCoordinates: input.finish?.location.coordinates ?? ride.finishLocation?.geojson.coordinates,
@@ -93,7 +92,7 @@ export class RidesController {
         input: z.object({ id: z.string() }),
         resolve: async ({ ctx, input }) => {
             const distancesToStart = await ctx.t.sql<{ distanceToStart: number | null }>`
-                SELECT ST_Distance(r.start_location, get_user_location(${ctx.user.id}, ${ctx.user.device.deviceId})) AS "distanceToStart"
+                SELECT ST_Distance(r.start_location, get_user_location(${ctx.user.id}, ${ctx.user.session.id})) AS "distanceToStart"
                 FROM rides AS r
                 WHERE id = ${input.id}
             `.then((x) => x[0]?.distanceToStart ?? null);
@@ -165,7 +164,7 @@ export class RidesController {
                     selector: ['status'],
                 }),
                 ctx.t.sql<{ distanceToStart: number | null }>`
-                    SELECT ST_Distance(r.start_location, get_user_location(${ctx.user.id}, ${ctx.user.device.deviceId})) as "distanceToStart"
+                    SELECT ST_Distance(r.start_location, get_user_location(${ctx.user.id}, ${ctx.user.session.id})) as "distanceToStart"
                     FROM rides AS r
                     JOIN users AS u ON u.id = ${ctx.user.id} AND r.id = ${input.id}
                 `.then((x) => x[0]?.distanceToStart ?? null),
@@ -237,7 +236,7 @@ export class RidesController {
         },
     });
 
-    public getActiveRidesCount = rpc({
+    public ['ride/active_rides_count'] = rpc({
         resolve: async ({ ctx }) => {
             const [row] = await ctx.t.sql<{ count: number }>`
                 SELECT COUNT(DISTINCT r.id) as "count"
@@ -254,7 +253,7 @@ export class RidesController {
         },
     });
 
-    public getRideMetaData = rpc({
+    public ['ride/meta_data'] = rpc({
         anonymous: true,
         input: z.object({
             id: z.string(),
@@ -432,7 +431,7 @@ export class RidesController {
                     FROM (
                         SELECT 
                             DISTINCT ON (r.id) r.id
-                            , ST_Distance(r.start_location, get_user_location(${ctx.user.id}, ${ctx.user.device.deviceId})) AS distance_to_start
+                            , ST_Distance(r.start_location, get_user_location(${ctx.user.id}, ${ctx.user.session.id})) AS distance_to_start
                             , COALESCE(r.started_at, r.start_date) as start_date
                             , CASE WHEN r.status = 'created' OR r.status = 'started' THEN 1 ELSE 0 END AS status_order
                             , r.start_location
@@ -449,7 +448,7 @@ export class RidesController {
                             AND (${toDate}::timestamptz IS NULL OR r.start_date <= ${toDate}::timestamptz)
                             AND (${riderLevel}::text IS NULL OR r.rider_level = ${riderLevel}::text)
                             AND (${bikeType}::text IS NULL OR r.bike_type = ${bikeType}::text)
-                            AND (${distanceToStart}::double precision IS NULL OR ST_DWithin(r.start_location, get_user_location(${ctx.user.id}, ${ctx.user.device.deviceId}), ${distanceToStart}::double precision))
+                            AND (${distanceToStart}::double precision IS NULL OR ST_DWithin(r.start_location, get_user_location(${ctx.user.id}, ${ctx.user.session.id}), ${distanceToStart}::double precision))
                             AND (${Boolean(distance)} = FALSE OR (COALESCE(r.manual_distance, r.calculated_distance) BETWEEN ${distance?.[0] ?? 0} AND ${distance?.[1] ?? 0}))
                             AND (${publicOnly} = FALSE OR r.privacy = 'public')
                             AND (${organizerId}::uuid IS NULL OR r.organizer_id = ${organizerId})
@@ -466,7 +465,7 @@ export class RidesController {
                             u.id,
                             CASE WHEN u.use_current_location THEN ud.location ELSE u.location END AS location
                         FROM users AS u
-                        JOIN user_devices AS ud ON ud.user_id = u.id
+                        JOIN user_sessions AS ud ON ud.user_id = u.id
                         WHERE u.is_anonymous = FALSE
                             
                     ) AS q
@@ -535,7 +534,7 @@ export class RidesController {
                     FROM clustered_items
                 )
                 SELECT *, distance_to_start AS "distanceToStart"
-                FROM "${literal(isGeoSearch ? 'geo_search' : 'list_search')}"
+                FROM "${raw(isGeoSearch ? 'geo_search' : 'list_search')}"
             `;
 
             const clusters: ClusterRow[] = [];
@@ -553,7 +552,7 @@ export class RidesController {
                             u.id,
                             CASE WHEN u.use_current_location THEN ud.location ELSE u.location END AS location
                         FROM users AS u
-                        JOIN user_devices AS ud ON ud.user_id = u.id
+                        JOIN user_sessions AS ud ON ud.user_id = u.id
                         WHERE u.is_anonymous = FALSE
                             
                     ) AS q
@@ -598,11 +597,11 @@ export class RidesController {
                         CASE WHEN u.use_current_location THEN ud.location ELSE u.location END AS location
                     FROM
                         users AS u
-                        JOIN user_devices AS ud ON ud.user_id = u.id
+                        JOIN user_sessions AS ud ON ud.user_id = u.id
                     WHERE u.id = ANY(${users.map((x) => x.id)})
                 ) AS q
                 WHERE q.location IS NOT NULL`.then((res) => {
-                return reduceBy(
+                return array.reduceBy(
                     res,
                     (x) => x.id,
                     (x) => x.location,
@@ -623,15 +622,13 @@ export class RidesController {
                     .filter((x) => x.location != null);
             });
 
-            const rideItems = orderAs(
-                ids,
-                await this.rideService.getRidePreviews(ctx, { ids, distancesToStart }),
-                (x) => x.id,
-            ).map((ride) => ({ type: 'ride' as const, id: ride.id, location: ride.startLocation, ride }));
+            const rideItems = array
+                .orderAs(ids, await this.rideService.getRidePreviews(ctx, { ids, distancesToStart }), (x) => x.id)
+                .map((ride) => ({ type: 'ride' as const, id: ride.id, location: ride.startLocation, ride }));
 
             return {
                 items: [...userItems, ...rideItems],
-                clusters: clusters.map((x) => pick(x, ['count', 'center', 'bbox'])),
+                clusters: clusters.map((x) => object.pick(x, ['count', 'center', 'bbox'])),
                 hasMore,
             };
         },

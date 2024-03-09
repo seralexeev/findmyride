@@ -62,3 +62,9 @@ tasks:
       - '^:tsc'
     options:
       outputStyle: buffer-only-failure
+  tsc_watch:
+    command:
+      - 'tsc'
+      - '--build'
+      - '--watch'
+    local: true

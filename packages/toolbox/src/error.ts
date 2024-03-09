@@ -8,72 +8,51 @@ export class UnreachableError extends Error {
 }
 
 type Options = {
-    code?: string;
     cause?: unknown;
-    data?: unknown;
-    publicMessage?: string;
+    internal?: unknown;
+    public?: { message?: string; data?: unknown };
 };
 
 export class InternalError extends Error {
-    #options;
+    public public;
+    public internal;
 
     public constructor(message: string, options?: Options) {
-        super(message, { cause: options?.cause as Error });
-        this.name = this.constructor.name;
-        this.#options = options;
+        super(message, {
+            cause: options?.cause as Error,
+        });
+
+        this.public = options?.public;
+        this.internal = options?.internal;
     }
 
     public shouldLog() {
         return true;
     }
 
-    public statusCode() {
+    public get code() {
         return 500;
     }
 
-    protected defaultCode() {
-        return 'INTERNAL_ERROR';
-    }
-
-    public get publicMessage() {
-        return this.#options?.publicMessage;
-    }
-
-    public get data() {
-        return this.#options?.data;
-    }
-
-    public get code() {
-        return this.#options?.code ?? this.defaultCode();
+    public get type() {
+        return this.constructor.name;
     }
 }
 
 export class InvalidOperationError extends InternalError {
-    protected override defaultCode() {
-        return 'OPERATION_INVALID';
-    }
-
-    public override statusCode() {
+    public override get code() {
         return 400;
     }
 }
 
 export class BadRequestError extends InternalError {
-    protected override defaultCode() {
-        return 'BAD_REQUEST';
-    }
-
-    public override statusCode() {
+    public override get code() {
         return 400;
     }
 }
 
 export class NotFoundError extends InternalError {
-    protected override defaultCode() {
-        return 'NOT_FOUND';
-    }
-
-    public override statusCode() {
+    public override get code() {
         return 400;
     }
 
@@ -83,11 +62,7 @@ export class NotFoundError extends InternalError {
 }
 
 export class UnauthorizedError extends InternalError {
-    protected override defaultCode() {
-        return 'UNAUTHORIZED';
-    }
-
-    public override statusCode() {
+    public override get code() {
         return 401;
     }
 
@@ -97,11 +72,7 @@ export class UnauthorizedError extends InternalError {
 }
 
 export class ForbiddenError extends InternalError {
-    protected override defaultCode() {
-        return 'FORBIDDEN';
-    }
-
-    public override statusCode() {
+    public override get code() {
         return 400;
     }
 }

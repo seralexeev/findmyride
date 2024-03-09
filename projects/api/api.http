@@ -1,0 +1,22 @@
+# Config
+POST http://localhost:3000/api/home/config
+Content-Type: application/json
+
+# File Upload
+POST http://localhost:3000/api/file/get_presigned_url
+Content-Type: application/json
+
+# Timezone API
+GET https://api.geotimezone.com/public/timezone?latitude=-33.903066&longitude=151.193153
+
+# File Upload
+POST http://localhost:3000/api/geo/timezone
+Content-Type: application/json
+
+{
+    "type": "Point",
+    "coordinates": [151.193153, -33.903066]
+}
+
+# Auth Redirect
+GET http://localhost:3000/auth/callback?params=token_1&param_2=token_2

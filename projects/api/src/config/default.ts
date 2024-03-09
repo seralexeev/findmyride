@@ -4,7 +4,7 @@ import z from 'zod';
 export const { shape, define } = new ConfigShape({
     env: z.enum(['prod', 'local']),
     server: {
-        port: z.number().default(3000),
+        port: z.number(),
         includeErrorsResponse: z.boolean().default(false),
     },
     development: {
@@ -17,9 +17,14 @@ export const { shape, define } = new ConfigShape({
     auth: {
         jwt: {
             secret: z.string(),
-            accessTokenExpiresIn: z.string().default('180d'),
-            refreshTokenExpiresIn: z.string().default('365d'),
-            issuer: z.string().default('Find My Ride'),
+            tokenExpiresIn: z.string().default('180d'),
+            slidingTokenWindow: z.string().default('7d'),
+            issuer: z.string().default('findmyride.app'),
+            audience: z.string().default('findmyride.app'),
+        },
+        google: {
+            clientId: z.string().default('370136940957-bud960clekr6pgd5fadk3suqkls7a7f6.apps.googleusercontent.com'),
+            clientSecret: z.string(),
         },
     },
     pg: {
@@ -32,16 +37,17 @@ export const { shape, define } = new ConfigShape({
     },
     strava: {
         apiUrl: z.string().default('https://www.strava.com/api/v3'),
-        clientId: z.string(),
+        clientId: z.string().default('121913'),
         clientSecret: z.string(),
     },
-    s3: {
-        region: z.string().optional(),
-        endpoint: z.string().optional(),
-        forcePathStyle: z.boolean().optional(),
+    storage: {
+        bucket: z.string().default('findmyride'),
+        endpoint: z.string(),
+        forcePathStyle: z.boolean().default(true),
+        region: z.string().default('us-east-1'),
         credentials: {
-            accessKeyId: z.string().default('findmyride'),
-            secretAccessKey: z.string().default('findmyride'),
+            accessKeyId: z.string(),
+            secretAccessKey: z.string(),
         },
     },
     worker: {
@@ -49,15 +55,14 @@ export const { shape, define } = new ConfigShape({
         concurrency: z.number().default(10),
     },
     mapbox: {
-        token: z.string(),
-    },
-    google: {
-        maps: {
-            apiPath: z.string().default('https://maps.googleapis.com/maps/api'),
-            apiKey: z.string(),
-        },
+        publicKey: z
+            .string()
+            .default('pk.eyJ1IjoiZmluZG15cmlkZWFwcCIsImEiOiJjbHN2M2drdnExN2czMmlwZ3YxOTMwamo5In0.Spo3ZVfITgaC-kjAa0F3Aw'),
     },
     firebase: {
         databaseURL: z.string().default('https://findmyride-b38a0.firebaseio.com'),
+    },
+    web: {
+        url: z.string(),
     },
 });

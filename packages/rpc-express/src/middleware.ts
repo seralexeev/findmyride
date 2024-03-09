@@ -54,6 +54,8 @@ export class ExpressServer {
                 if (result) {
                     await result.write({ res, req });
                 }
+
+                next();
             } catch (error) {
                 next(error);
             }
@@ -85,7 +87,7 @@ export class ExpressServer {
     protected errorHandler = (error: unknown, req: Request, res: Response, next: NextFunction) => {
         const serviceError = this.normalizeError(error);
 
-        res.status(serviceError.statusCode()).json(this.serializeError(serviceError));
+        res.status(serviceError.code).json(this.serializeError(serviceError));
     };
 
     protected serializeError = (error: unknown) => {

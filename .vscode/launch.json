@@ -2,21 +2,29 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "🚀 api",
+            "name": "🌍 api",
             "type": "node",
             "request": "launch",
             "console": "integratedTerminal",
-            "preLaunchTask": "🚀 api:build",
+            // "preLaunchTask": "🌍 api:tsc",
             "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsc-watch",
+            "cwd": "${workspaceFolder}/projects/api",
             "env": {
                 "TZ": "UTC"
             },
-            "args": [
-                "-b",
-                "${workspaceFolder}/projects/api",
-                "--onSuccess",
-                "node ${workspaceFolder}/projects/api/dist/start.js"
-            ]
+            "args": ["--build", "--onSuccess", "node ${workspaceFolder}/projects/api/dist/start.js"]
+        },
+        {
+            "name": "🪲 debug",
+            "type": "node",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsc-watch",
+            "cwd": "${workspaceFolder}/projects/api",
+            "env": {
+                "TZ": "UTC"
+            },
+            "args": ["--build", "--onSuccess", "node ${workspaceFolder}/projects/api/dist/debug.js"]
         }
     ]
 }

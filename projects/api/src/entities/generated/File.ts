@@ -16,14 +16,15 @@ export interface File extends ApplyOverride<{
 
     id: Field<string, string | undefined>;
 
+    blurhash: Field<string | null, string | null | undefined>;
     bucket: Field<string, string>;
-    imageSizes: Field<JsonValue | null, JsonValue | null | undefined>;
+    height: Field<number | null, number | null | undefined>;
     key: Field<string, string>;
     meta: Field<JsonValue, JsonValue | undefined>;
     mimeType: Field<string, string>;
     size: Field<number | null, number | null | undefined>;
-    type: Field<string, string>;
     url: Field<string, string>;
+    width: Field<number | null, number | null | undefined>;
 
     createdAt: Field<Date, Date | undefined>;
     updatedAt: Field<Date, Date | undefined>;

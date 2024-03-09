@@ -104,20 +104,20 @@ export abstract class Executor<
     public onOutputValidationError = (cause: unknown, args: HandleArgs<TRequest, TResponse, TConfig>): unknown => {
         throw new InternalError('Output Validation Error', {
             cause,
-            data: { name: args.name, input: args.input },
+            internal: { name: args.name, input: args.input },
         });
     };
 
     public onInputValidationError = (cause: unknown, args: HandleArgs<TRequest, TResponse, TConfig>): unknown => {
         throw new BadRequestError('Input Validation Error', {
             cause,
-            data: { name: args.name },
+            internal: { name: args.name },
         });
     };
 
     public onUnauthorized = (args: HandleArgs<TRequest, TResponse, TConfig>): unknown => {
         throw new UnauthorizedError('Unauthorized', {
-            data: { name: args.name },
+            internal: { name: args.name },
         });
     };
 

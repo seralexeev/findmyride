@@ -1,4 +1,3 @@
-import { Client, Status } from '@googlemaps/google-maps-services-js';
 import MapboxGeocoder, { GeocodeFeature, GeocodeRequest } from '@mapbox/mapbox-sdk/services/geocoding';
 import MapboxStatic, {
     CustomMarkerOverlay,
@@ -7,35 +6,39 @@ import MapboxStatic, {
     SimpleMarkerOverlay,
 } from '@mapbox/mapbox-sdk/services/static';
 import { LineString, Position, geo } from '@untype/geo';
-import { InternalError, array, assert } from '@untype/toolbox';
+import { array, assert } from '@untype/toolbox';
 import Axios from 'axios';
 import { singleton } from 'tsyringe';
+import z from 'zod';
 import { Config } from '../../config';
 import { FileService } from '../files/FileService';
+import { Context } from '../rpc/models';
 
 @singleton()
 export class GeoService {
     private geocoder;
     private static;
-    private google;
     private elevationChart;
     private elevation;
+    private timezone;
 
     public constructor(
-        private config: Config,
+        config: Config,
         private fileService: FileService,
     ) {
-        this.geocoder = MapboxGeocoder({ accessToken: config.mapbox.token });
-        this.static = MapboxStatic({ accessToken: config.mapbox.token });
-        this.google = new Client({ config: { baseURL: config.google.maps.apiPath } });
+        this.geocoder = MapboxGeocoder({ accessToken: config.mapbox.publicKey });
+        this.static = MapboxStatic({ accessToken: config.mapbox.publicKey });
 
-        this.config = config;
         this.elevation = Axios.create({
             baseURL: 'https://api.elevationapi.com/api',
         });
 
         this.elevationChart = Axios.create({
             baseURL: 'https://quickchart.io/chart/render/zm-9d9aea9d-03bd-45a1-89cc-2a751bf78bd9',
+        });
+
+        this.timezone = Axios.create({
+            baseURL: 'https://api.geotimezone.com/public',
         });
     }
 
@@ -67,20 +70,12 @@ export class GeoService {
             .join(', ');
     };
 
-    public getTimezone = async ([lng, lat]: Position) => {
-        const result = await this.google.timezone({
-            params: {
-                key: this.config.google.maps.apiKey,
-                location: { lng, lat },
-                timestamp: Math.floor(new Date().getTime() / 1000),
-            },
-        });
+    public getTimezone = async ([longitude, latitude]: Position) => {
+        const { iana_timezone, timezone_abbreviation } = await this.timezone
+            .get('/timezone', { params: { latitude, longitude } })
+            .then((x) => TimezoneResponse.parse(x.data));
 
-        if (result.data.status !== Status.OK) {
-            throw new InternalError('Unable to get timezone', { cause: result });
-        }
-
-        return result.data;
+        return { timeZoneId: iana_timezone, timeZoneName: timezone_abbreviation };
     };
 
     public reverseGeocodeShortPlaceName = async (query: Position) => {
@@ -110,22 +105,23 @@ export class GeoService {
     };
 
     public getStaticMapFile = (
+        ctx: Context<false>,
         overlays: Array<CustomMarkerOverlay | SimpleMarkerOverlay | PathOverlay | GeoJsonOverlay>,
         options?: { zoom: number; center: Position },
     ) => {
-        return this.fileService.upload({
+        return this.fileService.upload(ctx, 'images', {
             url: this.getStaticMapUrl(overlays, options),
         });
     };
 
-    public getElevationProfileId = async (line: LineString) => {
+    public getElevationProfileId = async (ctx: Context, line: LineString) => {
         const res = await this.elevation
-            .request<any>({
+            .request({
                 method: 'POST',
                 url: '/Elevation/line',
                 data: { line, dataSetName: 'SRTM_GL3', reduceResolution: 1 },
             })
-            .then((x) => x.data);
+            .then((x) => ElevationsResponse.parse(x.data));
 
         const labels: number[] = [];
         const data1: number[] = [];
@@ -145,7 +141,7 @@ export class GeoService {
             },
         });
 
-        const { file } = await this.fileService.upload({
+        const { file } = await this.fileService.upload(ctx, 'images', {
             buffer,
             mimeType: 'image/png',
         });
@@ -153,3 +149,19 @@ export class GeoService {
         return file;
     };
 }
+
+const TimezoneResponse = z.object({
+    iana_timezone: z.string(),
+    timezone_abbreviation: z.string().optional().default(''),
+});
+
+const ElevationsResponse = z.object({
+    geoPoints: z
+        .array(
+            z.object({
+                elevation: z.number(),
+                distanceFromOriginMeters: z.number(),
+            }),
+        )
+        .optional(),
+});

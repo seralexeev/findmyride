@@ -1,7 +1,7 @@
 import { Point, Position } from '@untype/geo';
-import { BadRequestError } from '@untype/toolbox';
 import { singleton } from 'tsyringe';
 import { z } from 'zod';
+import { FileService } from '../files/FileService';
 import { rpc } from '../rpc';
 import { GeoService } from './GeoService';
 import { GpxService } from './GpxService';
@@ -11,18 +11,14 @@ export class GeoController {
     public constructor(
         private gpxService: GpxService,
         private geo: GeoService,
+        private fileService: FileService,
     ) {}
 
     public ['geo/upload_gpx'] = rpc({
-        resolve: async ({ ctx, req }) => {
-            if (!req.file) {
-                throw new BadRequestError('File is required');
-            }
-
-            const { id } = await this.gpxService.processGpx(ctx, {
-                buffer: req.file.buffer,
-                meta: { originalName: req.file.originalname },
-            });
+        input: z.object({ id: z.string() }),
+        resolve: async ({ ctx, input }) => {
+            const file = await this.fileService.getFile(ctx, input.id);
+            const id = await this.gpxService.processGpx(ctx, file);
 
             return this.gpxService.getGpxTrack(ctx, id);
         },
@@ -48,15 +44,26 @@ export class GeoController {
                 .optional(),
         }),
         resolve: async ({ ctx, input }) => {
-            return this.geo.geocode({
+            // TODO: remove the cast
+            const items = (await this.geo.geocode({
                 query: input.input,
                 types: input.types,
-                proximity: ctx.user?.location.coordinates,
-            });
+                // TODO: fixme
+                // proximity: ctx.user?.location.coordinates,
+            })) as Array<{
+                id: string;
+                name: string;
+                fullAddress: string;
+                bbox: number[] | undefined;
+                center: Point;
+            }>;
+
+            return { items };
         },
     });
 
     public ['geo/timezone'] = rpc({
+        anonymous: true,
         input: z.object({ coordinates: Position }),
         resolve: async ({ input }) => this.geo.getTimezone(input.coordinates),
     });
@@ -72,11 +79,12 @@ export class GeoController {
         },
     });
 
+    // TODOL: fixme
     public ['geo/distance_to_user'] = rpc({
         input: z.object({ target: Point }),
         resolve: async ({ ctx, input }) => {
             const distance = await ctx.t.sql<{ distance: number }>`
-                SELECT ST_Distance(ST_GeomFromGeoJSON(${input.target})::geography, get_user_location(${ctx.user.id}, ${ctx.user.device.deviceId})) as "distance"
+                SELECT ST_Distance(ST_GeomFromGeoJSON(${input.target})::geography, get_user_location(${ctx.user.id}, ${ctx.user.session.id})) as "distance"
                 FROM users AS u
                 WHERE u.id = ${ctx.user.id}
             `.then((x) => x[0]?.distance ?? null);

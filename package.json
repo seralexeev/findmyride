@@ -11,10 +11,11 @@
         "packages/*",
         "projects/*"
     ],
-    "dependencies": {
-        "@moonrepo/cli": "1.21.3",
+    "devDependencies": {
+        "@moonrepo/cli": "1.22.6",
         "prettier": "3.2.5",
-        "typescript": "5.3.3"
+        "tsc-watch": "6.0.4",
+        "typescript": "5.4.2"
     },
     "engines": {
         "node": "iron"

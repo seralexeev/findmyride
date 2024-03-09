@@ -29,4 +29,32 @@ export const navigationAction = <T extends keyof typeof routes>(
 
 export const Colors = {
     primary: '#FF6F5A',
+    black: '#0C0908',
+};
+
+export const formatSlug = (slug: string) => {
+    return `@${slug}`;
+};
+
+const nFormatterLookup = [
+    { value: 1, symbol: '' },
+    { value: 1e3, symbol: 'k' },
+    { value: 1e6, symbol: 'M' },
+    { value: 1e9, symbol: 'G' },
+    { value: 1e12, symbol: 'T' },
+    { value: 1e15, symbol: 'P' },
+    { value: 1e18, symbol: 'E' },
+].reverse();
+
+const nFormatter = (num: number, { suffix = '', digits = 0, max = 6 }: { suffix?: string; digits?: number; max?: number }) => {
+    const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+
+    const item = nFormatterLookup.find((item, index) => num >= item.value && index >= max);
+
+    const result = item ? (num / item.value).toFixed(digits).replace(rx, '$1') + item.symbol : '0';
+    return suffix ? `${result}${suffix}` : result;
+};
+
+export const formatDistanceMeters = (distance: number) => {
+    return nFormatter(distance, { suffix: 'm', max: 5 });
 };

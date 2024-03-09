@@ -5,19 +5,19 @@ import { Config } from '../../config';
 import { StravaAccount, User } from '../../entities';
 import { FileService } from '../files/FileService';
 import { TrackSource } from '../rides/models';
-import { ApiContext } from '../rpc/types';
+import { Context } from '../rpc/models';
 import { GpxService } from './GpxService';
 import { StravaRoute } from './strava';
 
 @singleton()
 export class StravaService {
     public constructor(
-        private files: FileService,
+        private fileService: FileService,
         private gpxService: GpxService,
         private config: Config,
     ) {}
 
-    public link = async (ctx: ApiContext<true>, code: string) => {
+    public link = async (ctx: Context, code: string) => {
         const { access_token, refresh_token, athlete } = await Axios.request<{
             access_token: string;
             refresh_token: string;
@@ -55,14 +55,14 @@ export class StravaService {
         });
     };
 
-    public unlink = (ctx: ApiContext<true>) => {
+    public unlink = (ctx: Context) => {
         return User.update(ctx.t, {
             pk: { id: ctx.user.id },
             patch: { stravaId: null },
         });
     };
 
-    public getRoutes = async (ctx: ApiContext<true>) => {
+    public getRoutes = async (ctx: Context) => {
         const { accessToken, athleteId } = await this.getAccessToken(ctx);
 
         const routes = await Axios.request<StravaRoute[]>({
@@ -99,37 +99,34 @@ export class StravaService {
         return route.data;
     };
 
-    private getRoute = async (ctx: ApiContext<true>, stravaRouteId: string) => {
+    private getRoute = async (ctx: Context, stravaRouteId: string) => {
         const { accessToken } = await this.getAccessToken(ctx);
         return this.getRouteImpl({ stravaRouteId, accessToken });
     };
 
-    public importStravaGpx = async (ctx: ApiContext<true>, stravaRouteId: string) => {
+    public importStravaGpx = async (ctx: Context, stravaRouteId: string) => {
         const { accessToken } = await this.getAccessToken(ctx);
         const url = `${this.config.strava.apiUrl}/routes/${stravaRouteId}/export_gpx`;
-        const { buffer } = await this.files.upload({
+        const file = await this.fileService.upload(ctx, 'files', {
             url,
-            config: {
-                headers: { Authorization: `Bearer ${accessToken}` },
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
             },
         });
 
         const route = await this.getRouteImpl({ accessToken, stravaRouteId });
-
-        const { id } = await this.gpxService.processGpx(ctx, {
-            buffer,
-            meta: { originalUrl: url },
-        });
+        const id = await this.gpxService.processGpx(ctx, file);
+        const gpx = await this.gpxService.getGpxTrack(ctx, id);
 
         return {
-            ...(await this.gpxService.getGpxTrack(ctx, id)),
+            ...gpx,
             manualDistance: route.distance,
             trackSource: 'strava' as TrackSource,
             trackSourceUrl: `https://www.strava.com/routes/${route.id_str}`,
         };
     };
 
-    public getAccessToken = async (ctx: ApiContext<true>) => {
+    public getAccessToken = async (ctx: Context) => {
         const { strava } = await User.findByPkOrError(ctx.t, {
             pk: { id: ctx.user.id },
             selector: {

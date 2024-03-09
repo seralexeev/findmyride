@@ -1,11 +1,13 @@
 import { Pg, SqlClient, Transaction } from '@untype/pg';
-import { ContainerType, InternalError, LoggerType, Merge, OmitNever, json } from '@untype/toolbox';
+import { ContainerType, InternalError, Lazy, LoggerType, Merge, OmitNever, lazy } from '@untype/toolbox';
+import { json } from '@untype/toolbox/node';
 import {
     CronItem,
     CronItemOptions,
     JobHelpers,
     TaskSpec as LibTaskSpec,
     Logger,
+    RunnerOptions,
     SharedOptions,
     Task,
     TaskList,
@@ -64,14 +66,14 @@ type TaskSpec = Omit<LibTaskSpec, 'jobKey'> & {
 };
 
 export const createWorker = <T extends Record<string, Class<any>>>(handlers: () => T) => {
-    let sharedOptions: CompiledSharedOptions<SharedOptions>;
+    let sharedOptions: Lazy<CompiledSharedOptions<SharedOptions>>;
 
     const schedule = async (
         client: SqlClient,
         job: WorkerHandlerCollection<T>[keyof WorkerHandlerCollection<T>] & { key: string },
         { jobKey, ...spec }: TaskSpec = {},
     ) => {
-        const addJob = makeAddJob(sharedOptions, client.connect);
+        const addJob = makeAddJob(sharedOptions(), client.connect);
 
         if (jobKey === true) {
             jobKey = job.key;
@@ -156,7 +158,7 @@ export const createWorker = <T extends Record<string, Class<any>>>(handlers: () 
             }
         }
 
-        sharedOptions = processSharedOptions({
+        const options: RunnerOptions = {
             pgPool: pg.master.pool,
             logger: new Logger((scope) => (level, message, meta) => {
                 if (message.startsWith('Worker connected and looking for jobs')) {
@@ -171,9 +173,12 @@ export const createWorker = <T extends Record<string, Class<any>>>(handlers: () 
             parsedCronItems: parseCronItems(croneItems),
             taskList,
             concurrency,
-        });
+        };
 
-        await run(sharedOptions);
+        sharedOptions = lazy(() => processSharedOptions(options));
+
+        // await runMigrations(sharedOptions);
+        await run(options);
 
         logger.info('Worker connected and looking for jobs', {
             tasks: Object.keys(taskList),

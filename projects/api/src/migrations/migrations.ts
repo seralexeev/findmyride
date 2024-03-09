@@ -8,7 +8,7 @@ import { MigrationList } from '@untype/migrations';
 import init_1 from './001_init';
 import add_files_2 from './002_add_files';
 import add_users_3 from './003_add_users';
-import add_devices_4 from './004_add_devices';
+import add_sessions_4 from './004_add_sessions';
 import add_rides_5 from './005_add_rides';
 import add_ride_images_6 from './006_add_ride_images';
 import add_social_7 from './007_add_social';
@@ -30,7 +30,7 @@ export const migrations: MigrationList = [
     { id: 1, name: 'init', apply: init_1 },
     { id: 2, name: 'add_files', apply: add_files_2 },
     { id: 3, name: 'add_users', apply: add_users_3 },
-    { id: 4, name: 'add_devices', apply: add_devices_4 },
+    { id: 4, name: 'add_devices', apply: add_sessions_4 },
     { id: 5, name: 'add_rides', apply: add_rides_5 },
     { id: 6, name: 'add_ride_images', apply: add_ride_images_6 },
     { id: 7, name: 'add_social', apply: add_social_7 },

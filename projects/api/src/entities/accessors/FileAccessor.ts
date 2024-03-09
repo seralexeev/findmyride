@@ -8,6 +8,10 @@ export class FileAccessor extends EntityAccessor<File> {
 
     public Selector = this.createSelector({
         id: true,
-        imageSizes: true,
+        blurhash: true,
+        url: true,
+        mimeType: true,
+        height: true,
+        width: true,
     });
 }

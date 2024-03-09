@@ -52,7 +52,7 @@ export class NotificationWorker {
         resolve: async ({ input, t }) => {
             const users = await t.sql<{ userId: string }>`
                 SELECT DISTINCT(d.user_id) AS "userId"
-                FROM user_devices AS d
+                FROM user_sessions AS d
                 JOIN rides AS r ON ST_DWithin (r.start_location, get_user_location(d.user_id, d.id), 5000)
                 WHERE r.id = ${input.rideId} AND d.user_id != r.organizer_id
             `;

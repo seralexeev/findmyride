@@ -9,9 +9,9 @@ import { ChatRoom, File, GeoJsonSelector, GpxTrack, Ride, User, Users2Ride } fro
 import { schedule } from '../../worker';
 import { ChatService } from '../chat/ChatService';
 import { GeoService } from '../geo/GeoService';
-import { Context } from '../models/context';
 import { Colors, navigationAction } from '../models/shared';
 import { getRidePushTitle } from '../push/utils';
+import { Context } from '../rpc/models';
 import { CreateRide, TrackSource, isRideEditable } from './models';
 
 export type RidePreviewVm = Awaited<ReturnType<RideService['getRidePreviews']>>[number];
@@ -40,8 +40,8 @@ export class RideService {
         };
 
         const [elevationProfileId, staticMapId] = await Promise.all([
-            this.getElevationProfileId(imageArgs),
-            this.getStaticMapId(imageArgs),
+            this.getElevationProfileId(ctx, imageArgs),
+            this.getStaticMapId(ctx, imageArgs),
         ]);
 
         const startDate = zonedTimeToUtc(input.startDate, input.startTimezone.id);
@@ -128,15 +128,18 @@ export class RideService {
         });
     };
 
-    public getStaticMapId = async ({
-        track,
-        finishCoordinates,
-        startCoordinates,
-    }: {
-        track?: LineString | null;
-        startCoordinates: Position;
-        finishCoordinates?: Position;
-    }) => {
+    public getStaticMapId = async (
+        ctx: Context,
+        {
+            track,
+            finishCoordinates,
+            startCoordinates,
+        }: {
+            track?: LineString | null;
+            startCoordinates: Position;
+            finishCoordinates?: Position;
+        },
+    ) => {
         const overlays: Array<CustomMarkerOverlay | SimpleMarkerOverlay | PathOverlay | GeoJsonOverlay> = [];
         if (track) {
             const simplified = turf.simplify(track, {
@@ -168,31 +171,34 @@ export class RideService {
 
         const options = !track && !finishCoordinates ? { zoom: 8, center: startCoordinates } : undefined;
 
-        return (await this.geo.getStaticMapFile(overlays, options)).file.id;
+        return this.geo.getStaticMapFile(ctx, overlays, options).then((x) => x.file.id);
     };
 
-    private getElevationProfileId = async ({
-        track,
-        finishCoordinates,
-        startCoordinates,
-    }: {
-        track?: LineString | null;
-        startCoordinates: Position;
-        finishCoordinates?: Position;
-    }) => {
-        try {
-            if (!track) {
-                if (!finishCoordinates) {
-                    return null;
-                }
-
-                track = {
-                    type: 'LineString',
-                    coordinates: [startCoordinates, finishCoordinates],
-                };
+    private getElevationProfileId = async (
+        ctx: Context,
+        {
+            track,
+            finishCoordinates,
+            startCoordinates,
+        }: {
+            track?: LineString | null;
+            startCoordinates: Position;
+            finishCoordinates?: Position;
+        },
+    ) => {
+        if (!track) {
+            if (!finishCoordinates) {
+                return null;
             }
 
-            const { id } = await this.geo.getElevationProfileId(track);
+            track = {
+                type: 'LineString',
+                coordinates: [startCoordinates, finishCoordinates],
+            };
+        }
+
+        try {
+            const { id } = await this.geo.getElevationProfileId(ctx, track);
             return id;
         } catch {
             return null;

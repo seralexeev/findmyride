@@ -2,10 +2,10 @@ import { LocationWithName, Point } from '@untype/geo';
 import { BadRequestError, object } from '@untype/toolbox';
 import { singleton } from 'tsyringe';
 import { z } from 'zod';
-import { File, User, UserDevice } from '../../entities';
-import { Context } from '../models/context';
+import { File, User, UserSession } from '../../entities';
 import { BikeType, RiderLevel } from '../rides/models';
 import { rpc } from '../rpc';
+import { Context } from '../rpc/models';
 
 @singleton()
 export class UserController {
@@ -91,15 +91,15 @@ export class UserController {
     public ['user/update_location'] = rpc({
         input: z.object({ location: Point }),
         resolve: async ({ ctx, input }) => {
-            const device = await UserDevice.findFirstOrError(ctx.t, {
+            const device = await UserSession.findFirstOrError(ctx.t, {
                 filter: {
-                    id: { equalTo: ctx.device.deviceId },
+                    id: { equalTo: ctx.user.session.id },
                     userId: { equalTo: ctx.user.id },
                 },
                 selector: ['id'],
             });
 
-            await UserDevice.update(ctx.t, {
+            await UserSession.update(ctx.t, {
                 pk: { id: device.id },
                 patch: { location: input.location, locationUpdatedAt: new Date() },
             });

@@ -4,44 +4,17 @@ import { DOMParser } from '@xmldom/xmldom';
 import togeojson from 'togeojson';
 import { singleton } from 'tsyringe';
 import { GeoJsonSelector, GpxTrack } from '../../entities';
-import { FileService } from '../files/FileService';
-import { FileMeta } from '../files/models';
-import { ApiContext } from '../rpc/types';
+import { Context } from '../rpc/models';
 import { GeoService } from './GeoService';
 
 @singleton()
 export class GpxService {
-    public constructor(
-        private geo: GeoService,
-        private fileService: FileService,
-    ) {}
+    public constructor(private geo: GeoService) {}
 
-    public processGpx = async (ctx: ApiContext<true>, { buffer, meta }: { buffer: Buffer; meta?: FileMeta }) => {
-        const [{ file }, gpx] = await Promise.all([
-            this.fileService.upload({ buffer, mimeType: 'application/gpx+xml', meta }),
-            this.processGpxFromBuffer(buffer),
-        ]);
-
-        return await GpxTrack.create(ctx.t, {
-            item: {
-                fileId: file.id,
-                userId: ctx.user.id,
-                elevation: gpx.elevation,
-                startLocation: gpx.start.location,
-                startName: gpx.start.name,
-                finishLocation: gpx.finish.location,
-                finishName: gpx.finish.name,
-                track: gpx.track,
-            },
-            selector: ['id'],
-        });
-    };
-
-    public processGpxFromUrl = async (ctx: ApiContext<true>, url: string) => {
-        const { buffer, file } = await this.fileService.upload({ url });
+    public processGpx = async (ctx: Context, { buffer, file }: { file: { id: string }; buffer: Buffer }) => {
         const gpx = await this.processGpxFromBuffer(buffer);
 
-        return await GpxTrack.create(ctx.t, {
+        return GpxTrack.create(ctx.t, {
             item: {
                 fileId: file.id,
                 userId: ctx.user.id,
@@ -53,7 +26,7 @@ export class GpxService {
                 track: gpx.track,
             },
             selector: ['id'],
-        });
+        }).then((x) => x.id);
     };
 
     private processGpxFromBuffer = async (file: Buffer) => {
@@ -100,7 +73,7 @@ export class GpxService {
         };
     };
 
-    public getGpxTrack = async (ctx: ApiContext<true>, id: string) => {
+    public getGpxTrack = async (ctx: Context, id: string) => {
         const track = await GpxTrack.findByPkOrError(ctx.t, {
             pk: { id },
             selector: {
@@ -119,7 +92,7 @@ export class GpxService {
 
         const [distanceToStart, timeZone] = await Promise.all([
             ctx.t.sql<{ distanceToStart: number | null }>`
-                SELECT ST_Distance(g.start_location, get_user_location(${ctx.user.id}, ${ctx.device.deviceId})) as "distanceToStart"
+                SELECT ST_Distance(g.start_location, get_user_location(${ctx.user.id}, ${ctx.user.session.id})) as "distanceToStart"
                 FROM gpx_tracks AS g
                 JOIN users AS u ON u.id = ${ctx.user.id} AND g.id = ${id}
             `.then((x) => x[0]?.distanceToStart ?? null),

@@ -62,15 +62,6 @@ tasks:
       runDepsInParallel: false
       outputStyle: buffer
 
-  compose:
-    command: noop
-    deps:
-      - '~:compose_up'
-    local: true
-    options:
-      runDepsInParallel: false
-      outputStyle: buffer
-
   compose_up:
     command: 'docker compose --project-name findmyride -f ../../misc/docker-compose.yaml up'
     platform: system

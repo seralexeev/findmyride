@@ -38,8 +38,8 @@ import { User } from './User';
 export * from './User2Room';
 import { User2Room } from './User2Room';
 
-export * from './UserDevice';
-import { UserDevice } from './UserDevice';
+export * from './UserSession';
+import { UserSession } from './UserSession';
 
 export * from './Users2Ride';
 import { Users2Ride } from './Users2Ride';
@@ -57,7 +57,7 @@ export type EntityMap = {
     StravaAccount: StravaAccount;
     User: User;
     User2Room: User2Room;
-    UserDevice: UserDevice;
+    UserSession: UserSession;
     Users2Ride: Users2Ride;
 };
 

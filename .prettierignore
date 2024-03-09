@@ -1,6 +1,15 @@
+projects/api/src/entities/generated
+
 .yarn
 node_modules
 build
 dist
 coverage
-projects/api/src/entities/generated
+
+**/Pods
+
+**/sdks/hermes
+**/sdks/downloads
+
+packages/*/dist
+vendor

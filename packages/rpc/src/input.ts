@@ -25,4 +25,4 @@ export const fileInput = z.custom<FileInput>((x: any) => {
     }
 
     return true;
-}) as any as z.ZodType<FileInput, z.ZodTypeDef, File>;
+}) as any as z.ZodType<FileInput, z.ZodTypeDef, File | FormData>;

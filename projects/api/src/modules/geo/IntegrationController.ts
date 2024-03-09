@@ -47,10 +47,12 @@ export class IntegrationController {
                 throw new BadRequestError(errorMessage);
             }
 
-            const { id } = await this.gpxService.processGpx(ctx, {
+            const file = await this.fileService.upload(ctx, 'files', {
                 buffer: resp.data,
-                meta: { originalUrl: input.url },
+                mimeType: 'application/gpx+xml',
             });
+
+            const id = await this.gpxService.processGpx(ctx, file);
 
             return this.gpxService.getGpxTrack(ctx, id);
         },
@@ -72,7 +74,7 @@ export class IntegrationController {
             }
 
             // TODO: it should be a gpx track
-            const file = this.fileService.upload({ url: embedUrl });
+            const file = this.fileService.upload(ctx, 'files', { url: embedUrl });
 
             const json = page.data.match(/kmtBoot.setProps\("(?<json>.+)"\);/)?.groups?.json;
             if (!json) {

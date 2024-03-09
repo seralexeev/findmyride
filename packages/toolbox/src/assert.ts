@@ -3,7 +3,7 @@ import { isPromise } from './promise';
 import { Result, ResultError } from './result';
 
 export function noexept<T>(fn: () => Promise<T>): Promise<Result<T>>;
-export function noexept<T>(fn: () => T, defaultValue: T): T;
+export function noexept<T>(fn: () => T, defaultValue: Awaited<T>): T;
 export function noexept<T>(fn: () => T): Result<T>;
 export function noexept(fn: () => unknown, defaultValue?: unknown) {
     try {
@@ -29,4 +29,12 @@ export const existsBy = <T>(key: keyof T) => {
     return (obj?: T | undefined | null): obj is T & { [K in keyof T]: Exclude<T[K], null | undefined> } => {
         return obj != null && obj[key] != null;
     };
+};
+
+export const notnull = <T>(value: T | null | undefined, message = 'Not null assertion failed'): T => {
+    if (!exists(value)) {
+        throw new Error(message);
+    }
+
+    return value;
 };

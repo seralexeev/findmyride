@@ -1,7 +1,6 @@
-import mime from 'mime-types';
-
 export const imageMimeTypes = new Set([
     'image/gif',
+    'image/jpg',
     'image/jpeg',
     'image/pjpeg',
     'image/png',
@@ -11,5 +10,3 @@ export const imageMimeTypes = new Set([
 ]);
 
 export const isImage = (mimeType?: string | null) => mimeType && imageMimeTypes.has(mimeType);
-export const contentType = mime.contentType;
-export const extension = mime.extension;
