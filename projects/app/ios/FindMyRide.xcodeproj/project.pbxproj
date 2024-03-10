@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
-		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2653D782D14D455D926C79AE /* roboto_medium_italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6D1B48DBCA1A4B098ED59795 /* roboto_medium_italic.ttf */; };
 		31541A6CC54644EFB3E03D9E /* roboto_black_italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7E21DF259F9A4E0CBFB4094C /* roboto_black_italic.ttf */; };
@@ -20,11 +19,11 @@
 		6DB7AE3A47701B5DD909D7F6 /* Pods_FindMyRide.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 726A39D95416A301AF5E8AB6 /* Pods_FindMyRide.framework */; };
 		763AA271A3A14331A3233FFA /* roboto_bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A62AA5FFBCD045CD909F4D4B /* roboto_bold.ttf */; };
 		795A7C049B254F0FBC6C6E68 /* cirka_bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6D68AC7BF34240DE90FF2FA8 /* cirka_bold.ttf */; };
-		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		82E2EE856FEB46EBB6CA6A1E /* roboto_italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BA93EE9CA255419AA75C045B /* roboto_italic.ttf */; };
 		8CFF49E4A0174A32A3D9BC17 /* roboto_medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D6A51DE21B3C486E96C309DD /* roboto_medium.ttf */; };
 		986E337F2B8FEC04004B71D2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 986E337E2B8FEC04004B71D2 /* GoogleService-Info.plist */; };
 		986E33822B8FFFAD004B71D2 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 986E33812B8FFFAD004B71D2 /* File.swift */; };
+		98C4D7F02B9D4C0D008E865C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 98C4D7EF2B9D4C0D008E865C /* Assets.xcassets */; };
 		AE887BE934D7466297F83B3C /* roboto_thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E0A877B211C148A29C82C1B2 /* roboto_thin.ttf */; };
 		B2D36B9F11A743559F7D5501 /* roboto_regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C5302EE9E43A47869903221B /* roboto_regular.ttf */; };
 		CDA4E793568B44A4B80D0A75 /* cirka_medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34D08E58C119443B9D30A748 /* cirka_medium.ttf */; };
@@ -34,36 +33,35 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		08ED5273C52744F9B90C18B1 /* roboto_thin_italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_thin_italic.ttf; path = ../assets/fonts/roboto/roboto_thin_italic.ttf; sourceTree = "<group>"; };
-		09A11D5BA61B435CB0BFB54F /* roboto_light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_light.ttf; path = ../assets/fonts/roboto/roboto_light.ttf; sourceTree = "<group>"; };
+		08ED5273C52744F9B90C18B1 /* roboto_thin_italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_thin_italic.ttf; path = ../assets/fonts/roboto/roboto_thin_italic.ttf; sourceTree = "<group>"; };
+		09A11D5BA61B435CB0BFB54F /* roboto_light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_light.ttf; path = ../assets/fonts/roboto/roboto_light.ttf; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* FindMyRide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FindMyRide.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = FindMyRide/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = FindMyRide/AppDelegate.mm; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = FindMyRide/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = FindMyRide/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = FindMyRide/main.m; sourceTree = "<group>"; };
-		13B1C343224044A2A9C30D98 /* Cirka-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Cirka-Light.ttf"; path = "../assets/fonts/cirka/Cirka-Light.ttf"; sourceTree = "<group>"; };
-		34D08E58C119443B9D30A748 /* cirka_medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = cirka_medium.ttf; path = ../assets/fonts/cirka/cirka_medium.ttf; sourceTree = "<group>"; };
+		13B1C343224044A2A9C30D98 /* Cirka-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Cirka-Light.ttf"; path = "../assets/fonts/cirka/Cirka-Light.ttf"; sourceTree = "<group>"; };
+		34D08E58C119443B9D30A748 /* cirka_medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = cirka_medium.ttf; path = ../assets/fonts/cirka/cirka_medium.ttf; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-FindMyRide.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FindMyRide.debug.xcconfig"; path = "Target Support Files/Pods-FindMyRide/Pods-FindMyRide.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-FindMyRide.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FindMyRide.release.xcconfig"; path = "Target Support Files/Pods-FindMyRide/Pods-FindMyRide.release.xcconfig"; sourceTree = "<group>"; };
-		60BA0496391B439FA44BB5DA /* cirka_regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = cirka_regular.ttf; path = ../assets/fonts/cirka/cirka_regular.ttf; sourceTree = "<group>"; };
-		6D1B48DBCA1A4B098ED59795 /* roboto_medium_italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_medium_italic.ttf; path = ../assets/fonts/roboto/roboto_medium_italic.ttf; sourceTree = "<group>"; };
-		6D68AC7BF34240DE90FF2FA8 /* cirka_bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = cirka_bold.ttf; path = ../assets/fonts/cirka/cirka_bold.ttf; sourceTree = "<group>"; };
-		70B34776B56E465582A96F31 /* cirka_variable.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = cirka_variable.ttf; path = ../assets/fonts/cirka/cirka_variable.ttf; sourceTree = "<group>"; };
+		60BA0496391B439FA44BB5DA /* cirka_regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = cirka_regular.ttf; path = ../assets/fonts/cirka/cirka_regular.ttf; sourceTree = "<group>"; };
+		6D1B48DBCA1A4B098ED59795 /* roboto_medium_italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_medium_italic.ttf; path = ../assets/fonts/roboto/roboto_medium_italic.ttf; sourceTree = "<group>"; };
+		6D68AC7BF34240DE90FF2FA8 /* cirka_bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = cirka_bold.ttf; path = ../assets/fonts/cirka/cirka_bold.ttf; sourceTree = "<group>"; };
+		70B34776B56E465582A96F31 /* cirka_variable.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = cirka_variable.ttf; path = ../assets/fonts/cirka/cirka_variable.ttf; sourceTree = "<group>"; };
 		726A39D95416A301AF5E8AB6 /* Pods_FindMyRide.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FindMyRide.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		7E21DF259F9A4E0CBFB4094C /* roboto_black_italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_black_italic.ttf; path = ../assets/fonts/roboto/roboto_black_italic.ttf; sourceTree = "<group>"; };
-		800E44C06A604D3EB49C85F6 /* roboto_black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_black.ttf; path = ../assets/fonts/roboto/roboto_black.ttf; sourceTree = "<group>"; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FindMyRide/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		7E21DF259F9A4E0CBFB4094C /* roboto_black_italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_black_italic.ttf; path = ../assets/fonts/roboto/roboto_black_italic.ttf; sourceTree = "<group>"; };
+		800E44C06A604D3EB49C85F6 /* roboto_black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_black.ttf; path = ../assets/fonts/roboto/roboto_black.ttf; sourceTree = "<group>"; };
 		986E337E2B8FEC04004B71D2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		986E33802B8FFFAC004B71D2 /* FindMyRide-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FindMyRide-Bridging-Header.h"; sourceTree = "<group>"; };
 		986E33812B8FFFAD004B71D2 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
-		A62AA5FFBCD045CD909F4D4B /* roboto_bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_bold.ttf; path = ../assets/fonts/roboto/roboto_bold.ttf; sourceTree = "<group>"; };
-		BA93EE9CA255419AA75C045B /* roboto_italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_italic.ttf; path = ../assets/fonts/roboto/roboto_italic.ttf; sourceTree = "<group>"; };
-		C5302EE9E43A47869903221B /* roboto_regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_regular.ttf; path = ../assets/fonts/roboto/roboto_regular.ttf; sourceTree = "<group>"; };
-		CF7C69F8CDF04318961F0C11 /* roboto_light_italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_light_italic.ttf; path = ../assets/fonts/roboto/roboto_light_italic.ttf; sourceTree = "<group>"; };
-		D5F2B4B819CF4DA59D845C69 /* roboto_bold_italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_bold_italic.ttf; path = ../assets/fonts/roboto/roboto_bold_italic.ttf; sourceTree = "<group>"; };
-		D6A51DE21B3C486E96C309DD /* roboto_medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_medium.ttf; path = ../assets/fonts/roboto/roboto_medium.ttf; sourceTree = "<group>"; };
-		E0A877B211C148A29C82C1B2 /* roboto_thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_thin.ttf; path = ../assets/fonts/roboto/roboto_thin.ttf; sourceTree = "<group>"; };
+		98C4D7EF2B9D4C0D008E865C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = FindMyRide/Assets.xcassets; sourceTree = "<group>"; };
+		A62AA5FFBCD045CD909F4D4B /* roboto_bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_bold.ttf; path = ../assets/fonts/roboto/roboto_bold.ttf; sourceTree = "<group>"; };
+		BA93EE9CA255419AA75C045B /* roboto_italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_italic.ttf; path = ../assets/fonts/roboto/roboto_italic.ttf; sourceTree = "<group>"; };
+		C5302EE9E43A47869903221B /* roboto_regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_regular.ttf; path = ../assets/fonts/roboto/roboto_regular.ttf; sourceTree = "<group>"; };
+		CF7C69F8CDF04318961F0C11 /* roboto_light_italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_light_italic.ttf; path = ../assets/fonts/roboto/roboto_light_italic.ttf; sourceTree = "<group>"; };
+		D5F2B4B819CF4DA59D845C69 /* roboto_bold_italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_bold_italic.ttf; path = ../assets/fonts/roboto/roboto_bold_italic.ttf; sourceTree = "<group>"; };
+		D6A51DE21B3C486E96C309DD /* roboto_medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_medium.ttf; path = ../assets/fonts/roboto/roboto_medium.ttf; sourceTree = "<group>"; };
+		E0A877B211C148A29C82C1B2 /* roboto_thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = roboto_thin.ttf; path = ../assets/fonts/roboto/roboto_thin.ttf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -82,11 +80,10 @@
 		13B07FAE1A68108700A75B9A /* FindMyRide */ = {
 			isa = PBXGroup;
 			children = (
+				98C4D7EF2B9D4C0D008E865C /* Assets.xcassets */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
-				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
 			name = FindMyRide;
@@ -123,7 +120,6 @@
 				08ED5273C52744F9B90C18B1 /* roboto_thin_italic.ttf */,
 			);
 			name = Resources;
-			path = "";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -229,8 +225,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
-				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				986E337F2B8FEC04004B71D2 /* GoogleService-Info.plist in Resources */,
 				D26FD3FE19A246FBA5A73ACC /* Cirka-Light.ttf in Resources */,
 				795A7C049B254F0FBC6C6E68 /* cirka_bold.ttf in Resources */,
@@ -244,6 +238,7 @@
 				82E2EE856FEB46EBB6CA6A1E /* roboto_italic.ttf in Resources */,
 				3ADE72A6391041EB98B3CD2A /* roboto_light.ttf in Resources */,
 				3D354CCDC8694DF8968A04C3 /* roboto_light_italic.ttf in Resources */,
+				98C4D7F02B9D4C0D008E865C /* Assets.xcassets in Resources */,
 				8CFF49E4A0174A32A3D9BC17 /* roboto_medium.ttf in Resources */,
 				2653D782D14D455D926C79AE /* roboto_medium_italic.ttf in Resources */,
 				B2D36B9F11A743559F7D5501 /* roboto_regular.ttf in Resources */,
@@ -367,6 +362,7 @@
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = FindMyRide/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = FindMyRide;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -404,6 +400,7 @@
 				DEVELOPMENT_TEAM = 38YGVQZ49W;
 				INFOPLIST_FILE = FindMyRide/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = FindMyRide;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -508,10 +505,7 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -590,10 +584,7 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

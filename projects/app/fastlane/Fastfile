@@ -1,11 +1,35 @@
-# Uncomment the line if you want fastlane to automatically update itself
 update_fastlane
 
-default_platform(:ios)
-
 platform :ios do
-  desc "Description of what the lane does"
-  lane :custom_lane do
-    # add actions here: https://docs.fastlane.tools/actions
+  lane :icons do
+    appicon(
+      appicon_image_file: "assets/app_icon.png",
+      appicon_devices: [:iphone, :ios_marketing],
+      appicon_path: "ios/FindMyRide/Assets.xcassets",
+    )
+    appicon(
+      appicon_image_file: 'assets/splash_screen.png',
+      appicon_devices: [:universal],
+      appicon_path: "ios/FindMyRide/Assets.xcassets",
+      appicon_name: 'Splash.imageset',
+    )
+  end
+end
+
+platform :android do
+  lane :icons do
+    android_appicon(
+      appicon_image_file: 'assets/app_icon.png',
+      appicon_icon_types: [:launcher],
+      appicon_path: 'android/app/src/main/res/mipmap',
+      generate_rounded: true
+    )
+    android_appicon(
+      appicon_image_file: 'assets/app_icon.png',
+      appicon_icon_types: [:notification],
+      appicon_path: 'android/app/src/main/res/drawable',
+      appicon_filename: 'ic_notification',
+      generate_rounded: true
+    )
   end
 end
