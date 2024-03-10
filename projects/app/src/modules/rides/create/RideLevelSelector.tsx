@@ -15,7 +15,6 @@ export const RiderLevelSelector = memos(
     ({ value, onChange }: RiderLevelSelectorProps) => {
         return (
             <ui.Box>
-                <ui.Text variant='caption'>Rider Level</ui.Text>
                 <ui.RadioGroup
                     items={RiderLevel.options.map((x) => x.value)}
                     value={value}

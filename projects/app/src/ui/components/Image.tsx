@@ -1,4 +1,5 @@
-import React, { memo } from 'react';
+import { FileSchema, ImageSchema } from '@findmyride/api';
+import React from 'react';
 import {
     DimensionValue,
     ImageResizeMode,
@@ -8,6 +9,7 @@ import {
     StyleSheet,
     ViewStyle,
 } from 'react-native';
+import { Blurhash } from 'react-native-blurhash';
 import { useDebounce } from 'use-debounce';
 import { ui } from '..';
 import { useBooleanState } from '../../hooks/useBooleanState';
@@ -17,8 +19,8 @@ import { borderStyler, marginStyler, viewStyler } from '../styler/viewStyler';
 import { Theme } from '../theme';
 
 type FileImageImplProps = {
-    image: any; // ImageWithSizes;
-    size?: any; // ImageSize;
+    image: FileSchema;
+    size?: 'small' | 'medium' | 'large';
     color?: keyof Theme['colors'];
     aspectRatio?: number;
     resizeMode?: ImageResizeMode;
@@ -28,8 +30,8 @@ type FileImageImplProps = {
     loader?: boolean;
 };
 
-export const FileImageImpl = memo(function FileImageImpl({
-    image,
+export const FileImageImpl = function FileImageImpl({
+    image: maybeImage,
     size = 'large',
     color = 'tertiary',
     aspectRatio,
@@ -42,25 +44,27 @@ export const FileImageImpl = memo(function FileImageImpl({
     const { colors, border } = useTheme();
     const [isLoading, onLoadStart, onLoadEnd] = useBooleanState();
     const [isLoadingDebounced] = useDebounce(isLoading, 50);
-
-    if (!image.imageSizes) {
+    const imageParsed = ImageSchema.safeParse(maybeImage);
+    if (!imageParsed.success) {
         return null;
     }
 
-    const config = image.imageSizes[size];
-    aspectRatio ??= ((typeof width === 'number' ? width : null) ?? config.width) / (height ?? config.height);
+    const image = imageParsed.data;
+
+    aspectRatio ??= ((typeof width === 'number' ? width : null) ?? image.width) / (height ?? image.height);
 
     return (
         <ui.Box style={style} aspectRatio={aspectRatio} width={width} height={height} position='relative'>
             <Image
                 style={StyleSheet.absoluteFillObject}
-                source={{ uri: config.url }}
+                source={{ uri: image.url }}
                 onLoadStart={onLoadStart}
                 onLoadEnd={onLoadEnd}
                 resizeMode={resizeMode}
             />
             {loader && (
                 <ui.Transition
+                    style={StyleSheet.absoluteFillObject}
                     zIndex={1}
                     inAnimation='fadeIn'
                     outAnimation='fadeOut'
@@ -69,12 +73,13 @@ export const FileImageImpl = memo(function FileImageImpl({
                     backgroundColor={colors[color].background}
                     flexCenter
                 >
-                    <ui.Spinner wh={16} color={border.color} />
+                    {image.blurhash != null && <Blurhash blurhash={image.blurhash} style={StyleSheet.absoluteFillObject} />}
+                    <ui.Spinner wh={16} color={border.color} opacity={0.5} />
                 </ui.Transition>
             )}
         </ui.Box>
     );
-});
+};
 
 export type FileImageProps = FileImageImplProps & StylerProps<typeof marginStyler> & StylerProps<typeof borderStyler>;
 export const FileImage = withStyler({ ...marginStyler, ...borderStyler })(FileImageImpl);

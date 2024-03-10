@@ -17,7 +17,7 @@ export const TabBar: FC<BottomTabBarProps> = memo(({ state, navigation }) => {
         <ui.Box row justifyContent='space-around' position='absolute' left={0} bottom={0} right={0} shadow>
             <TabItem
                 title='Explore'
-                icon={({ color }) => <icons.Home width={24} height={24} fill={color} />}
+                icon={({ color }) => <icons.Home width={30} height={30} fill={color} />}
                 isActive={isActive(routes.home())}
                 onPress={() => navigation.navigate(routes.home())}
             />

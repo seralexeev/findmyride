@@ -1,7 +1,7 @@
 import { RpcItemsOutput, RpcOutput, UserVm } from '@findmyride/api';
 import { useRoute } from '@react-navigation/native';
 import { compareAsc } from 'date-fns';
-import React, { FC, VFC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Composer, GiftedChat, IMessage, Send, User } from 'react-native-gifted-chat';
 import { useRpc } from '../../api/rpc';
 import { icons, ui } from '../../ui';
@@ -29,13 +29,13 @@ const mapMessage = (message: RpcMessage): ChatMessage => {
         user: {
             _id: message.user.id,
             name: message.user.name,
-            avatar: message.user.avatar?.imageSizes?.small.url,
+            avatar: message.user.avatar?.url,
         },
     };
 };
 
 const date = new Date();
-export const ChatRoom: FC<ChatRoomProps> = ({ roomId }) => {
+export const ChatRoom: FC<ChatRoomProps> = memo(({ roomId }) => {
     const openProfile = useOpenUserProfile();
     const { profile } = useProfile();
     const [sendRideMessage] = useRpc('chat/send_room_message').useMutation();
@@ -58,17 +58,22 @@ export const ChatRoom: FC<ChatRoomProps> = ({ roomId }) => {
         );
     };
 
-    useRpc('chat/get_room_messages').useQuery({
+    const getRoomMessagesQuery = useRpc('chat/get_room_messages').useQuery({
         refetchInterval: 5000,
         input: { direction: 'forward', roomId, date: forwardCursor },
-        onSuccess: ({ items }) => {
+    });
+
+    useEffect(() => {
+        if (getRoomMessagesQuery.data) {
+            const items = getRoomMessagesQuery.data.items;
             onGetMessages(items);
             const first = items[0];
+
             if (first) {
-                setForwardCursor(first.createdAt);
+                setForwardCursor(new Date(first.createdAt));
             }
-        },
-    });
+        }
+    }, [getRoomMessagesQuery.data]);
 
     const loadBack = async () => {
         if (!backCursor) {
@@ -82,7 +87,10 @@ export const ChatRoom: FC<ChatRoomProps> = ({ roomId }) => {
         });
 
         if (hasMore && items) {
-            setBackCursor(items[items.length - 1]?.createdAt);
+            const cursor = items[items.length - 1]?.createdAt;
+            if (cursor) {
+                setBackCursor(new Date(cursor));
+            }
         }
 
         onGetMessages(items);
@@ -97,7 +105,7 @@ export const ChatRoom: FC<ChatRoomProps> = ({ roomId }) => {
         () => ({
             _id: profile.id,
             name: profile.name,
-            avatar: profile.avatar?.imageSizes?.small.url,
+            avatar: profile.avatar?.url,
         }),
         [profile],
     );
@@ -126,11 +134,7 @@ export const ChatRoom: FC<ChatRoomProps> = ({ roomId }) => {
                     },
                 }));
 
-                const message = await sendRideMessage({
-                    roomId,
-                    text: x.text,
-                });
-
+                const message = await sendRideMessage({ roomId, text: x.text });
                 updateMessage(message, x._id);
             });
         },
@@ -151,10 +155,15 @@ export const ChatRoom: FC<ChatRoomProps> = ({ roomId }) => {
                 user={chatUser}
                 inverted={false}
                 renderAvatar={(props) => {
-                    const user = props.currentMessage?.userRpc;
-                    return user ? (
-                        <ui.Box onPress={() => openProfile(user.id)}>
-                            <UserAvatar user={user} size={36} />
+                    const currentMessage = props.currentMessage;
+                    if (!currentMessage) {
+                        return null;
+                    }
+
+                    const message = currentMessage as ChatMessage;
+                    return message.userRpc ? (
+                        <ui.Box onPress={() => openProfile(message.userRpc.id)}>
+                            <UserAvatar user={message.userRpc} size={36} />
                         </ui.Box>
                     ) : null;
                 }}
@@ -165,15 +174,14 @@ export const ChatRoom: FC<ChatRoomProps> = ({ roomId }) => {
                             width={36}
                             color='light'
                             StartIcon={icons.FileGpx}
-                            onPress={() => {
-                                return uploadGpx().then(async (x) => {
-                                    if (!x.gpxTrackUrl) {
-                                        return;
-                                    }
+                            onPress={async () => {
+                                const gpx = await uploadGpx();
+                                if (!gpx.gpxTrackUrl) {
+                                    return;
+                                }
 
-                                    const message = await sendRideMessage({ roomId, text: x.gpxTrackUrl });
-                                    updateMessage(message);
-                                });
+                                const message = await sendRideMessage({ roomId, text: gpx.gpxTrackUrl });
+                                updateMessage(message);
                             }}
                         />
                         <Composer
@@ -193,9 +201,9 @@ export const ChatRoom: FC<ChatRoomProps> = ({ roomId }) => {
             />
         </ui.Box>
     );
-};
+});
 
-export const ChatRoomScreen: VFC = () => {
+export const ChatRoomScreen: FC = memo(() => {
     const route = useRoute<any>();
 
     return (
@@ -203,4 +211,4 @@ export const ChatRoomScreen: VFC = () => {
             <ChatRoom roomId={route.params.id} />
         </ui.Screen>
     );
-};
+});

@@ -168,7 +168,7 @@ export class SocialController {
                     filter: uuid.isUUID(input.id) ? { id: { equalTo: input.id } } : { slug: { equalTo: input.id } },
                     selector: {
                         id: true,
-                        avatar: File.Selector,
+                        avatar: File.ImageSelector,
                         bikeType: true,
                         level: true,
                         bio: true,
@@ -214,7 +214,7 @@ export class SocialController {
         resolve: async ({ ctx, input }) => {
             const items = await RideImage.find(ctx.t, {
                 filter: { userId: { equalTo: input.userId } },
-                selector: { id: true, file: File.Selector, description: true, user: User.Selector, createdAt: true },
+                selector: { id: true, file: File.ImageSelector, description: true, user: User.Selector, createdAt: true },
                 orderBy: [['createdAt', 'DESC']],
             });
 
@@ -340,7 +340,7 @@ export class SocialController {
                 }),
                 RideImage.find(ctx.t, {
                     filter: { id: { in: [...imageIds] } },
-                    selector: { id: true, file: File.Selector, userId: true, description: true, createdAt: true },
+                    selector: { id: true, file: File.ImageSelector, userId: true, description: true, createdAt: true },
                     orderBy: [['createdAt', 'DESC']],
                 }),
                 this.friendshipStatus(ctx, [...friendshipStatusIds]),
@@ -382,7 +382,7 @@ export class SocialController {
                           images: Array<{
                               id: string;
                               user: UserVm;
-                              file: SelectorShape<File, typeof File.Selector>;
+                              file: SelectorShape<File, typeof File.ImageSelector>;
                               description: string | null;
                               createdAt: Date;
                           }>;

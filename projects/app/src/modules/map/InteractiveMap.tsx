@@ -8,6 +8,7 @@ import { useConfig } from '../../config/ConfigProvider';
 import { icons, ui } from '../../ui';
 import { withStyler } from '../../ui/styler';
 import { viewStyler } from '../../ui/styler/viewStyler';
+import { mergeRefs } from '../../ui/utils';
 import { UserAvatar } from '../user/UserAvatar';
 import { useOpenUserProfile } from '../user/services';
 import { useGeoLocation } from './GeoLocationProvider';
@@ -56,12 +57,9 @@ const InteractiveMapImpl = forwardRef<MapboxGL.MapView, InteractiveMapProps>(fun
     const bottomInset = toolbarBottom ? toolbarBottom * 8 + 8 : Math.max(bottom, 8);
 
     return (
-        <ui.Box style={style} overflowHidden>
+        <ui.Box style={style} overflowHidden flex>
             <MapboxGL.MapView
-                ref={(current) => {
-                    map.current = current;
-                    return ref;
-                }}
+                ref={mergeRefs(ref, map)}
                 style={StyleSheet.absoluteFillObject}
                 attributionEnabled={false}
                 logoEnabled={false}

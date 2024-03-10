@@ -7,10 +7,20 @@ export type FileMeta = Partial<{
     originalName: string;
 }>;
 
-export type ImageSchema = z.infer<typeof ImageSchema>;
+export type FileSchema = z.infer<typeof FileSchema>;
+export const FileSchema = z.object({
+    id: z.string(),
+    url: z.string(),
+    width: z.number().nullable(),
+    height: z.number().nullable(),
+    blurhash: z.string().nullable(),
+});
+
+export type ImageSchema = z.infer<typeof FileSchema>;
 export const ImageSchema = z.object({
+    id: z.string(),
     url: z.string(),
     width: z.number(),
     height: z.number(),
-    blurhash: z.string().nullable(),
+    blurhash: z.string(),
 });

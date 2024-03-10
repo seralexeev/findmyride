@@ -11,6 +11,7 @@ import { useBottomSheetHelper } from '../../ui/components';
 import { ChatListScreen } from '../chat/ChatListScreen';
 import { FeedScreen } from '../feed/FeedScreen';
 import { RidesList } from '../rides/RidesList';
+import { RidesMap } from '../rides/RidesMap';
 import { RideFilter, useRidesFilter } from '../rides/filter/RideFilter';
 import { useProfile } from '../user/ProfileProvider';
 import { SearchUsersScreen } from '../user/SearchUsersScreen';
@@ -119,8 +120,7 @@ export const HomeScreen: FC = () => {
                         />
                     </ui.Tab>
                     <ui.Tab name='Map' title='Map' flex Icon={icons.Map}>
-                        <ui.Text>RidesMap</ui.Text>
-                        {/* <RidesMap filter={filter} setFilter={setFilter} /> */}
+                        <RidesMap filter={filter} setFilter={setFilter} />
                     </ui.Tab>
                     {homeDataQuery.isSuccess && homeDataQuery.data.activeRides.count > 0 && (
                         <ui.Tab

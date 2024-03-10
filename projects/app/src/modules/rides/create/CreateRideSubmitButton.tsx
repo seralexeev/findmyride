@@ -4,6 +4,7 @@ import { object } from '@untype/toolbox';
 import React, { FC, memo } from 'react';
 import { useInvalidate, useRpc } from '../../../api/rpc';
 import { ui } from '../../../ui';
+import { truncateDateToUTCStringWithoutTZ } from '../../../ui/utils';
 import { useCreateRide } from './services';
 
 export const CreateRideSubmitButton: FC = memo(() => {

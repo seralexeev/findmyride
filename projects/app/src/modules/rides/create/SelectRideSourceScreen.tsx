@@ -23,8 +23,9 @@ const tryGetSourceFromUrl = (value: unknown): TrackSource | null => {
         return null;
     }
 
-    const url = new URL(value);
     try {
+        const url = new URL(value);
+
         switch (true) {
             case url.host.includes('ridewithgps'):
                 return 'rwg';

@@ -224,21 +224,21 @@ ALTER FUNCTION public.get_bbox(VARIADIC items public.geography[]) OWNER TO findm
 -- Name: get_user_location(uuid, text); Type: FUNCTION; Schema: public; Owner: findmyride
 --
 
-CREATE FUNCTION public.get_user_location(arg_user_id uuid, arg_device_id text) RETURNS public.geography
+CREATE FUNCTION public.get_user_location(arg_user_id uuid, arg_session_id text) RETURNS public.geography
     LANGUAGE plpgsql IMMUTABLE
     AS $$
 BEGIN
     RETURN (
-        SELECT CASE WHEN u.use_current_location THEN d.location ELSE u.location END
+        SELECT CASE WHEN u.use_current_location THEN s.location ELSE u.location END
         FROM users AS u
-        JOIN user_sessions AS d ON u.id = d.user_id
-        WHERE u.id = arg_user_id AND d.id = arg_device_id::text
+        JOIN user_sessions AS s ON u.id = s.user_id
+        WHERE u.id = arg_user_id AND s.id = arg_session_id::text
     );
 END
 $$;
 
 
-ALTER FUNCTION public.get_user_location(arg_user_id uuid, arg_device_id text) OWNER TO findmyride;
+ALTER FUNCTION public.get_user_location(arg_user_id uuid, arg_session_id text) OWNER TO findmyride;
 
 --
 -- Name: immutable_concat_ws(text, text[]); Type: FUNCTION; Schema: public; Owner: findmyride

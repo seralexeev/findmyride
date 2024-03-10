@@ -26,7 +26,7 @@ export class RideImageController {
         },
     });
 
-    public ['image/get_ride'] = rpc({
+    public ['image/by_image_id'] = rpc({
         anonymous: true,
         input: z.object({
             imageId: z.string(),
@@ -41,7 +41,7 @@ export class RideImageController {
                 filter: { rideId: { equalTo: rideId } },
                 selector: {
                     id: true,
-                    file: File.Selector,
+                    file: File.ImageSelector,
                     description: true,
                     user: User.Selector,
                     createdAt: true,
@@ -62,7 +62,7 @@ export class RideImageController {
                 filter: { rideId: { equalTo: input.rideId } },
                 selector: {
                     id: true,
-                    file: File.Selector,
+                    file: File.ImageSelector,
                     description: true,
                     user: User.Selector,
                     createdAt: true,

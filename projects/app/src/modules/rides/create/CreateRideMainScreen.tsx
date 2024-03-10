@@ -1,6 +1,6 @@
 import BottomSheet from '@gorhom/bottom-sheet';
 import MapboxGL from '@rnmapbox/maps';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useRpc } from '../../../api/rpc';
 import { icons, ui } from '../../../ui';
 import { useScreen } from '../../../ui/ScreenProvider';
@@ -37,14 +37,26 @@ export const CreateRideMainScreen: FC = () => {
     const distanceToStartQuery = useRpc('geo/distance_to_user').useQuery({
         input: { target: ride.start?.location! },
         enabled: Boolean(ride.start?.location),
-        onSuccess: ({ distance }) => setRide((prev) => ({ ...prev, distanceToStart: distance })),
     });
+
+    useEffect(() => {
+        const distanceToStart = distanceToStartQuery.data?.distance;
+        if (distanceToStart != null) {
+            setRide((prev) => ({ ...prev, distanceToStart }));
+        }
+    }, [distanceToStartQuery.data?.distance]);
 
     const distanceQuery = useRpc('geo/distance').useQuery({
         input: { from: ride.start?.location!, to: ride.finish?.location! },
         enabled: Boolean(ride.start?.location && ride.finish?.location && !ride.gpxTrackId),
-        onSuccess: ({ distance }) => setRide((prev) => ({ ...prev, calculatedDistance: distance })),
     });
+
+    useEffect(() => {
+        const calculatedDistance = distanceQuery.data?.distance;
+        if (calculatedDistance != null) {
+            setRide((prev) => ({ ...prev, calculatedDistance }));
+        }
+    }, [distanceQuery.data?.distance]);
 
     const showAdditionalOption = () => {
         return showScreen({
@@ -101,7 +113,26 @@ export const CreateRideMainScreen: FC = () => {
                             style={{ lineColor: colors.primary.background, lineWidth: 3, lineOpacity: 1 }}
                         />
                     </MapboxGL.ShapeSource>
+                ) : ride.start != null && ride.finish != null ? (
+                    <MapboxGL.ShapeSource
+                        id='trackLine'
+                        shape={{
+                            type: 'LineString',
+                            coordinates: [ride.start.location.coordinates, ride.finish.location.coordinates],
+                        }}
+                    >
+                        <MapboxGL.LineLayer
+                            id='track'
+                            style={{
+                                lineColor: colors.primary.background,
+                                lineWidth: 2,
+                                lineOpacity: 0.75,
+                                lineDasharray: [2, 2],
+                            }}
+                        />
+                    </MapboxGL.ShapeSource>
                 ) : null}
+
                 <RidePointMarker name='Start' location={ride.start?.location} />
                 <RidePointMarker name='Finish' location={ride.finish?.location} />
             </InteractiveMap>

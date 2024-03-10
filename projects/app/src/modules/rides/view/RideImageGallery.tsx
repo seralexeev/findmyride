@@ -1,31 +1,33 @@
-import { useAnonymousGuard } from '@app/modules/auth/services';
-import { useImagesUpload } from '@app/modules/files/services';
-import { useRideImagesScreen } from '@app/modules/rides/view/RideImageScreen';
-import { RpcOutput, useInvalidate, useRpc } from '@app/modules/rpc/useRpc';
-import { icons, ui } from '@app/ui';
-import { useLoadCallback, useUIConfig } from '@flstk/react-core';
-import React, { VFC } from 'react';
+import { RpcOutput } from '@findmyride/api';
+import React, { FC } from 'react';
+import { useInvalidate, useRpc } from '../../../api/rpc';
+import { useLoadCallback } from '../../../hooks/useLoadingCallback';
+import { icons, ui } from '../../../ui';
+import { useTheme } from '../../../ui/ThemeProvider';
+import { useFileUpload } from '../../files/useFileUpload';
+import { useProfile } from '../../user/ProfileProvider';
+import { useRideImagesScreen } from './RideImageScreen';
 
 type RideImageGalleryProps = {
-    ride: RpcOutput<'getRide'>;
+    ride: RpcOutput<'ride/get'>;
 };
 
-export const RideImageGallery: VFC<RideImageGalleryProps> = ({ ride }) => {
-    const uploadImages = useImagesUpload();
+export const RideImageGallery: FC<RideImageGalleryProps> = ({ ride }) => {
+    const { requireRegistration } = useProfile();
+    const { uploadMultiple } = useFileUpload();
     const invalidate = useInvalidate();
     const openImage = useRideImagesScreen();
-    const { mutateAsync: attachImageReq } = useRpc('attachRideImage').useMutation();
+    const [attachImageReq] = useRpc('image/attach').useMutation();
     const [attachImage, loading] = useLoadCallback(() => {
-        return uploadImages().then((images) => {
+        return uploadMultiple('photo').then((images) => {
             return attachImageReq({ fileIds: images.map((f) => f.id), rideId: ride.id }).then(() => {
-                return invalidate(['getRideImages']);
+                return invalidate(['image/ride_images']);
             });
         });
     });
 
-    const getRideImagesReq = useRpc('getRideImages').useQuery({ input: { rideId: ride.id } });
-    const { voidGuard } = useAnonymousGuard();
-    const { font } = useUIConfig();
+    const getRideImagesReq = useRpc('image/ride_images').useQuery({ input: { rideId: ride.id } });
+    const { font } = useTheme();
 
     return (
         <ui.Box flex>
@@ -39,7 +41,7 @@ export const RideImageGallery: VFC<RideImageGalleryProps> = ({ ride }) => {
                                         <ui.Spinner wh={16} paletteColor='primary' />
                                     </ui.Box>
                                 ) : (
-                                    <ui.Box onPress={voidGuard(attachImage)} flex flexCenter>
+                                    <ui.Box onPress={requireRegistration(attachImage)} flex flexCenter>
                                         <icons.Plus width={16} height={16} fill={font.variants.caption.color} />
                                         <ui.Text marginTop children='Add' variant='caption' />
                                     </ui.Box>

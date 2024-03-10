@@ -18,7 +18,7 @@ export class UserController {
                     name: true,
                     location: ['geojson'],
                     locationName: true,
-                    avatar: File.Selector,
+                    avatar: File.ImageSelector,
                     slug: true,
                     bio: true,
                     bikeType: true,

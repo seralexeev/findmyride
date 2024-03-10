@@ -1,7 +1,7 @@
 import { RpcItemsOutput, RpcOutput } from '@findmyride/api';
-import { useRpcFlatListProps } from 'projects/app/src/api/RpcFlatList';
-import React, { FC, Fragment, useState } from 'react';
+import React, { FC, Fragment, memo, useState } from 'react';
 import { useDebounce } from 'use-debounce';
+import { useRpcFlatListProps } from '../../../api/RpcFlatList';
 import { icons, ui } from '../../../ui';
 import { useScreen } from '../../../ui/ScreenProvider';
 import { ParticipantRow } from './ParticipantRow';
@@ -11,7 +11,7 @@ type ParticipatesListProps = {
     ride: RpcOutput<'ride/get'>;
 };
 
-export const ParticipatesList: FC<ParticipatesListProps> = ({ ride }) => {
+export const ParticipatesList: FC<ParticipatesListProps> = memo(({ ride }) => {
     const [query, setQuery] = useState('');
     const [debouncedQuery] = useDebounce(query, 500, { leading: true });
     const { showScreen } = useScreen();
@@ -72,9 +72,9 @@ export const ParticipatesList: FC<ParticipatesListProps> = ({ ride }) => {
             )}
         </ui.Box>
     );
-};
+});
 
-export const InviteScreen: FC<ParticipatesListProps> = ({ ride }) => {
+export const InviteScreen: FC<ParticipatesListProps> = memo(({ ride }) => {
     const [query, setQuery] = useState('');
     const [debouncedQuery] = useDebounce(query, 500, { leading: true });
     const [flatListProps, itemsQuery] = useRpcFlatListProps(
@@ -120,4 +120,4 @@ export const InviteScreen: FC<ParticipatesListProps> = ({ ride }) => {
             )}
         </ui.Screen>
     );
-};
+});

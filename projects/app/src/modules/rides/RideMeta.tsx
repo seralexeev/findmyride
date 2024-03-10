@@ -2,6 +2,7 @@ import { BikeType, RiderLevel, formatDistanceMeters } from '@findmyride/api';
 import React, { FC, memo } from 'react';
 import { ui } from '../../ui';
 import { useTheme } from '../../ui/ThemeProvider';
+import { flattenDuration, formatDurationShort } from '../../ui/utils';
 import { BikeTypeIcon, getBikeTypeTitle } from './BikeTypeIcon';
 import { RiderLevelIcon } from './RiderLevelIcon';
 

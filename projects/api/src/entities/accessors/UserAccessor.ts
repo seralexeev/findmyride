@@ -11,7 +11,7 @@ export class UserAccessor extends EntityAccessor<User> {
         id: true,
         name: true,
         slug: true,
-        avatar: File.Selector,
+        avatar: File.ImageSelector,
         locationName: true,
         level: true,
     });

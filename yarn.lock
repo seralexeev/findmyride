@@ -2523,7 +2523,9 @@ __metadata:
     lottie-react-native: "npm:6.7.0"
     react: "npm:18.2.0"
     react-native: "npm:0.73.5"
+    react-native-add-calendar-event: "npm:5.0.0"
     react-native-animatable: "npm:1.4.0"
+    react-native-blurhash: "npm:1.1.11"
     react-native-device-info: "npm:10.13.1"
     react-native-document-picker: "npm:9.1.1"
     react-native-fast-image: "npm:8.6.3"
@@ -2540,6 +2542,7 @@ __metadata:
     react-native-modal-datetime-picker: "npm:17.1.0"
     react-native-pager-view: "npm:6.2.3"
     react-native-permissions: "npm:4.1.4"
+    react-native-pinchable: "npm:0.2.1"
     react-native-qrcode-svg: "npm:6.3.0"
     react-native-reanimated: "npm:3.7.2"
     react-native-safe-area-context: "npm:4.9.0"
@@ -14623,12 +14626,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-add-calendar-event@npm:5.0.0":
+  version: 5.0.0
+  resolution: "react-native-add-calendar-event@npm:5.0.0"
+  peerDependencies:
+    expo: ">=47.0.0"
+  peerDependenciesMeta:
+    expo:
+      optional: true
+  checksum: 10c0/9a05190c5a75c081c9a6a43e163c6e96e7a779cc5621ba2bb4e5c9c6011faedcae6c1c5ecb9d677536c0c67ee9e68564cdb29779809813bf100a9d07b342859a
+  languageName: node
+  linkType: hard
+
 "react-native-animatable@npm:1.4.0":
   version: 1.4.0
   resolution: "react-native-animatable@npm:1.4.0"
   dependencies:
     prop-types: "npm:^15.8.1"
   checksum: 10c0/658f15aa3744c3d6a22a44ab4609afc4335ff06d0a200a1fba513e470ebb4bd561ab709204b3777ee53cad526f695e2b4290e057a50fcd461aca337e407fe2b1
+  languageName: node
+  linkType: hard
+
+"react-native-blurhash@npm:1.1.11":
+  version: 1.1.11
+  resolution: "react-native-blurhash@npm:1.1.11"
+  peerDependencies:
+    react: ">=16.8.1"
+    react-native: ">=0.60.0-rc.0 <1.0.x"
+  checksum: 10c0/530430a7d61b5f88e0a054a7a59577c46d330a0a663dcac0da877079df0710e1f17c89f9731434349db33a2c4e09580ee49b0331d4c077f7e57e985bda00911f
   languageName: node
   linkType: hard
 
@@ -14862,6 +14887,13 @@ __metadata:
     react-native-windows:
       optional: true
   checksum: 10c0/507bd3681ae094a294d1834c368d1b745e2c266ee4f024e25b574a4de609a6ac0f40f2abbef5b1c5416a608965b0a2f43fe67abc1b939baf847edc626fe6d2bc
+  languageName: node
+  linkType: hard
+
+"react-native-pinchable@npm:0.2.1":
+  version: 0.2.1
+  resolution: "react-native-pinchable@npm:0.2.1"
+  checksum: 10c0/70a65a92fccf88c16bc4e638834a6f31292741931883a5a773e60451c65b5896b15eaafd8187344425c7e3b9ef15cef74d6b0488e8b443ca324d7153a30d9194
   languageName: node
   linkType: hard
 

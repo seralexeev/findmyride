@@ -1,26 +1,26 @@
-import { useConfig } from '@app/modules/config/ConfigProvider';
-import { RpcItemsOutput } from '@app/modules/rpc/useRpc';
-import { useShareScreen } from '@app/modules/share/ShareScreen';
-import { UserMediaCard } from '@app/modules/user/UserMediaCard';
-import { icons, ui } from '@app/ui';
+import { RpcItemsOutput } from '@findmyride/api';
 import { formatDistanceToNow } from 'date-fns';
-import React, { VFC } from 'react';
+import React, { FC, Fragment } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import Pinchable from 'react-native-pinchable';
+import { useConfig } from '../../../config/ConfigProvider';
+import { icons, ui } from '../../../ui';
+import { useShareScreen } from '../../share/ShareScreen';
+import { UserMediaCard } from '../../user/UserMediaCard';
 
 type RideImageProps = {
-    image: RpcItemsOutput<'getRideImages'>;
+    image: RpcItemsOutput<'image/ride_images'>;
     onDotsPress: () => void;
     onLayout?: (event: LayoutChangeEvent) => void;
     withDots: boolean;
 };
 
-export const RideImage: VFC<RideImageProps> = ({ image, onDotsPress, onLayout, withDots }) => {
-    const { config } = useConfig();
+export const RideImage: FC<RideImageProps> = ({ image, onDotsPress, onLayout, withDots }) => {
+    const config = useConfig();
     const share = useShareScreen();
 
     return (
-        <>
+        <Fragment>
             <ui.Box padding onLayout={onLayout}>
                 <UserMediaCard
                     user={image.user}
@@ -58,6 +58,6 @@ export const RideImage: VFC<RideImageProps> = ({ image, onDotsPress, onLayout, w
             <ui.Box padding>
                 <ui.Text children={image.description} marginBottom />
             </ui.Box>
-        </>
+        </Fragment>
     );
 };

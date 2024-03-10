@@ -7,6 +7,7 @@ import { useInvalidate, useRpc } from '../../../api/rpc';
 import { useEvent } from '../../../hooks/useEvent';
 import { useScreen } from '../../../ui/ScreenProvider';
 import { Theme } from '../../../ui/theme';
+import { truncateDateToUTCStringWithoutTZ } from '../../../ui/utils';
 import { BikeTypeSelector } from '../create/BikeTypeSelector';
 import { RideAdditionalOptionsScreen } from '../create/CreateRideAdditionalOptionsScreen';
 import { CreateRideMainScreen } from '../create/CreateRideMainScreen';

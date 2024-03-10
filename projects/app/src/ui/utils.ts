@@ -1,8 +1,20 @@
 import { add, intervalToDuration } from 'date-fns';
-import { ComponentType, FC, ReactNode, isValidElement, memo } from 'react';
+import { ComponentType, FC, LegacyRef, MutableRefObject, ReactNode, RefCallback, isValidElement, memo } from 'react';
 
 export const isReactComponent = <T>(Tag: ReactNode | ComponentType<T>): Tag is ComponentType<T> => {
     return Boolean(Tag) && !isValidElement(Tag);
+};
+
+export const mergeRefs = <T = any>(...refs: Array<MutableRefObject<T> | LegacyRef<T>>): RefCallback<T> => {
+    return (value) => {
+        for (const ref of refs) {
+            if (typeof ref === 'function') {
+                ref(value);
+            } else if (ref != null) {
+                (ref as MutableRefObject<T | null>).current = value;
+            }
+        }
+    };
 };
 
 export const memos = <T extends FC<any>, U extends Record<string, ComponentType<any>>>(target: T, source: U): T & U => {

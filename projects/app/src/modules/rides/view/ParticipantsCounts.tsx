@@ -1,16 +1,15 @@
-import { getParticipantStatusColor } from '@app/modules/rides/view/services';
-import { RpcOutput } from '@app/modules/rpc/useRpc';
-import { ui } from '@app/ui';
-import { ParticipantStatus } from '@shared/models/rides';
+import { ParticipantStatus, RpcOutput } from '@findmyride/api';
 import { capitalCase } from 'change-case';
-import React, { VFC } from 'react';
+import React, { FC, memo } from 'react';
+import { ui } from '../../../ui';
+import { getParticipantStatusColor } from './services';
 
 type ParticipantsCountsProps = {
-    ride: RpcOutput<'getRide'>;
+    ride: RpcOutput<'ride/get'>;
 };
 
 const visibleStatuses: ParticipantStatus[] = ['approved', 'declined', 'pending'];
-export const ParticipantsCounts: VFC<ParticipantsCountsProps> = ({ ride }) => {
+export const ParticipantsCounts: FC<ParticipantsCountsProps> = memo(({ ride }) => {
     return (
         <ui.Box row justifyContent='space-between' alignItems='center' marginRight>
             <ui.Box row justifyContent='space-around' flex paddingRight>
@@ -31,4 +30,4 @@ export const ParticipantsCounts: VFC<ParticipantsCountsProps> = ({ ride }) => {
             </ui.Box>
         </ui.Box>
     );
-};
+});

@@ -1,4 +1,4 @@
-import React, { ComponentType, forwardRef } from 'react';
+import React, { ComponentType, forwardRef, memo } from 'react';
 import { useTheme } from './ThemeProvider';
 import { Theme } from './theme';
 
@@ -18,27 +18,29 @@ export const withStyler = <TStyleEnv, TStyler extends Record<string, TStyleEnv>>
     const combine = (styler as any)[combineKey];
     return <TProps extends { style?: TStyleEnv }>(Component: ComponentType<TProps>) => {
         // eslint-disable-next-line react/display-name
-        return forwardRef((combinedProps: TProps & StylerProps<TStyler>, ref: any) => {
-            const config = useTheme();
+        return memo(
+            forwardRef((combinedProps: TProps & StylerProps<TStyler>, ref: any) => {
+                const config = useTheme();
 
-            const style: Record<string, TStyleEnv> = {};
-            const props: Record<string, any> = {};
+                const style: Record<string, TStyleEnv> = {};
+                const props: Record<string, any> = {};
 
-            for (const key in combinedProps) {
-                if (key in styler) {
-                    const value = resolveProp(config, combinedProps[key], styler[key]);
-                    if (value != null) {
-                        Object.assign(style, value);
+                for (const key in combinedProps) {
+                    if (key in styler) {
+                        const value = resolveProp(config, combinedProps[key], styler[key]);
+                        if (value != null) {
+                            Object.assign(style, value);
+                        }
+                    } else {
+                        props[key] = combinedProps[key];
                     }
-                } else {
-                    props[key] = combinedProps[key];
                 }
-            }
 
-            const finalStyle = combine({}, props.style, style);
+                const finalStyle = combine({}, props.style, style);
 
-            return <Component {...(props as any)} style={finalStyle} ref={ref} />;
-        });
+                return <Component {...(props as any)} style={finalStyle} ref={ref} />;
+            }),
+        );
     };
 };
 

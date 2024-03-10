@@ -22,7 +22,7 @@ export const Spinner: FC<SpinnerProps> = memo(function Spinner({ wh = 32, color,
             wh={wh}
             speed={1.2}
             {...props}
-            colorFilters={colorFinal ? [{ keypath: 'circle-blue', color: colorFinal }] : undefined}
+            colorFilters={colorFinal ? [{ keypath: 'spin_circle', color: colorFinal }] : undefined}
         />
     );
 });

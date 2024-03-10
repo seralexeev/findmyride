@@ -14,7 +14,6 @@ export const BikeTypeSelector = memos(
     ({ value, onChange }: BikeTypeSelectorProps) => {
         return (
             <ui.Box>
-                <ui.Text variant='caption' children='Bike Type' />
                 <ui.RadioGroup
                     items={BikeType.options.map((x) => x.value)}
                     value={value}

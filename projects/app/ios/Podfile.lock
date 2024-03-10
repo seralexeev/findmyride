@@ -975,6 +975,10 @@ PODS:
   - React-Mapbuffer (0.73.5):
     - glog
     - React-debug
+  - react-native-add-calendar-event (5.0.0):
+    - React-Core
+  - react-native-blurhash (1.1.11):
+    - React-Core
   - react-native-document-picker (9.1.1):
     - React-Core
   - react-native-geolocation-service (5.3.1):
@@ -988,6 +992,8 @@ PODS:
   - react-native-pager-view (6.2.3):
     - glog
     - RCT-Folly (= 2022.05.16.00)
+    - React-Core
+  - react-native-pinchable (0.2.1):
     - React-Core
   - react-native-safe-area-context (4.9.0):
     - React-Core
@@ -1263,11 +1269,14 @@ DEPENDENCIES:
   - React-jsinspector (from `../../../node_modules/react-native/ReactCommon/jsinspector-modern`)
   - React-logger (from `../../../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../../../node_modules/react-native/ReactCommon`)
+  - react-native-add-calendar-event (from `../../../node_modules/react-native-add-calendar-event`)
+  - react-native-blurhash (from `../../../node_modules/react-native-blurhash`)
   - react-native-document-picker (from `../../../node_modules/react-native-document-picker`)
   - react-native-geolocation-service (from `../../../node_modules/react-native-geolocation-service`)
   - react-native-get-random-values (from `../../../node_modules/react-native-get-random-values`)
   - react-native-image-picker (from `../../../node_modules/react-native-image-picker`)
   - react-native-pager-view (from `../../../node_modules/react-native-pager-view`)
+  - react-native-pinchable (from `../../../node_modules/react-native-pinchable`)
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - React-nativeconfig (from `../../../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../../../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -1393,6 +1402,10 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native/ReactCommon/logger"
   React-Mapbuffer:
     :path: "../../../node_modules/react-native/ReactCommon"
+  react-native-add-calendar-event:
+    :path: "../../../node_modules/react-native-add-calendar-event"
+  react-native-blurhash:
+    :path: "../../../node_modules/react-native-blurhash"
   react-native-document-picker:
     :path: "../../../node_modules/react-native-document-picker"
   react-native-geolocation-service:
@@ -1403,6 +1416,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native-image-picker"
   react-native-pager-view:
     :path: "../../../node_modules/react-native-pager-view"
+  react-native-pinchable:
+    :path: "../../../node_modules/react-native-pinchable"
   react-native-safe-area-context:
     :path: "../../../node_modules/react-native-safe-area-context"
   React-nativeconfig:
@@ -1533,11 +1548,14 @@ SPEC CHECKSUMS:
   React-jsinspector: 32db5e364bcae8fca8cdf8891830636275add0c5
   React-logger: 0331362115f0f5b392bd7ed14636d1a3ea612479
   React-Mapbuffer: 30d796a057e4e077d44b4c2ba17869fb8c1064eb
+  react-native-add-calendar-event: b9802a8be8ad4beb0dcb3efb28969c077558fb29
+  react-native-blurhash: a59e6bf8117a0304488ed576abd440f4b0777a8c
   react-native-document-picker: 3599b238843369026201d2ef466df53f77ae0452
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-image-picker: 88f0a6e61299e8a94391284302633411a82ba395
   react-native-pager-view: 3796df305c59c352a26811ead0f6ea78acac1886
+  react-native-pinchable: b4381b0807d15c12b14bfacd927128f52d96f0f1
   react-native-safe-area-context: b97eb6f9e3b7f437806c2ce5983f479f8eb5de4b
   React-nativeconfig: 78e2b14c0ee479449845b67bbe103343257cbcc0
   React-NativeModulesApple: 4fce13d416890352a7a9621427459fe738c4e79a

@@ -1,6 +1,7 @@
 import { CustomMarkerOverlay, GeoJsonOverlay, PathOverlay, SimpleMarkerOverlay } from '@mapbox/mapbox-sdk/services/static';
 import * as turf from '@turf/turf';
 import { LineString, Position } from '@untype/geo';
+import { Logger } from '@untype/logger';
 import { array, object } from '@untype/toolbox';
 import { format } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
@@ -19,6 +20,7 @@ export type RidePreviewVm = Awaited<ReturnType<RideService['getRidePreviews']>>[
 @singleton()
 export class RideService {
     public constructor(
+        private logger: Logger,
         private geo: GeoService,
         private chatService: ChatService,
     ) {}
@@ -126,6 +128,8 @@ export class RideService {
                 },
             },
         });
+
+        return { id: ride.id };
     };
 
     public getStaticMapId = async (
@@ -149,6 +153,16 @@ export class RideService {
             overlays.push({
                 path: { coordinates: simplified.coordinates, strokeColor: Colors.primary, strokeWidth: 5 },
             });
+        } else {
+            if (finishCoordinates) {
+                overlays.push({
+                    path: {
+                        coordinates: [startCoordinates, finishCoordinates],
+                        strokeColor: Colors.primary,
+                        strokeWidth: 3,
+                    },
+                });
+            }
         }
 
         overlays.push({
@@ -200,7 +214,8 @@ export class RideService {
         try {
             const { id } = await this.geo.getElevationProfileId(ctx, track);
             return id;
-        } catch {
+        } catch (error) {
+            this.logger.warn('Failed to get elevation profile', error);
             return null;
         }
     };
@@ -212,7 +227,7 @@ export class RideService {
                 filter: { id: { in: ids } },
                 selector: {
                     id: true,
-                    staticMap: File.Selector,
+                    staticMap: File.ImageSelector,
                     organizer: User.Selector,
                     startDate: true,
                     startName: true,
@@ -234,7 +249,7 @@ export class RideService {
                     title: true,
                     termsUrl: true,
                     rideImagesConnection: {
-                        selector: { nodes: { file: File.Selector }, totalCount: true },
+                        selector: { nodes: { file: File.ImageSelector }, totalCount: true },
                         orderBy: [['createdAt', 'DESC']],
                         first: 3,
                     },

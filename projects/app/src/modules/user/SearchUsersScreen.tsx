@@ -3,7 +3,7 @@ import dedent from 'dedent';
 import React, { FC, memo, useState } from 'react';
 import { useDebounce } from 'use-debounce';
 import { useRpcFlatListProps } from '../../api/RpcFlatList';
-import { ui } from '../../ui';
+import { icons, ui } from '../../ui';
 import { UserListItem } from './UserListItem';
 
 export const SearchUsersScreen: FC = memo(() => {

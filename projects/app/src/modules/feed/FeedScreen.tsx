@@ -1,7 +1,7 @@
 import { ParticipantStatus, RidePreviewVm, RpcItemsOutput } from '@findmyride/api';
 import { assert } from '@untype/toolbox';
 import { formatDistanceToNow } from 'date-fns';
-import React, { FC, Fragment, VFC, useState } from 'react';
+import React, { FC, Fragment, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { useRpcFlatListProps } from '../../api/RpcFlatList';
@@ -11,7 +11,7 @@ import { useRideImagesScreen } from '../rides/view/RideImageScreen';
 import { UserListItem } from '../user/UserListItem';
 import { UserMediaCard } from '../user/UserMediaCard';
 
-export const FeedScreen: VFC = () => {
+export const FeedScreen: FC = () => {
     const [flatListProps, itemsQUery] = useRpcFlatListProps('social/get_feed', { type: 'dummy' }, (x) => `${x.type}-${x.date}`);
 
     return (

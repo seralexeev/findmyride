@@ -1,7 +1,9 @@
 import { Colors, RpcItemsOutput } from '@findmyride/api';
+import MapboxGL from '@rnmapbox/maps';
+import { CameraProps } from '@rnmapbox/maps/lib/typescript/src/components/Camera';
 import { keepPreviousData } from '@tanstack/react-query';
 import { Position } from '@untype/geo';
-import React, { VFC, useEffect, useRef, useState } from 'react';
+import React, { FC, memo, useEffect, useRef, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Carousel from 'react-native-snap-carousel';
@@ -9,6 +11,7 @@ import { useDebounce } from 'use-debounce';
 import { useRpc } from '../../api/rpc';
 import { icons, ui } from '../../ui';
 import { useScreen } from '../../ui/ScreenProvider';
+import { InteractiveMap } from '../map/InteractiveMap';
 import { useProfile } from '../user/ProfileProvider';
 import { UserAvatar } from '../user/UserAvatar';
 import { UserMediaCard } from '../user/UserMediaCard';
@@ -19,7 +22,7 @@ import { RideFilterProps } from './filter/RideFilter';
 
 type RideVm = RpcItemsOutput<'ride/find'>;
 
-export const RidesMap: VFC<RideFilterProps> = ({ filter }) => {
+export const RidesMap: FC<RideFilterProps> = memo(({ filter }) => {
     const [bbox, setBbox] = useState<[Position, Position]>();
     const { bottom } = useSafeAreaInsets();
     const map = useRef<MapboxGL.MapView>(null);
@@ -47,10 +50,6 @@ export const RidesMap: VFC<RideFilterProps> = ({ filter }) => {
         }
     }, [ridesQuery.data?.items, selected]);
 
-    useEffect(() => {
-        void map.current?.getVisibleBounds().then((bbox) => setBbox(bbox as [Position, Position]));
-    }, []);
-
     const centerCoordinate = profile.location?.location.coordinates;
     const cameraProps: CameraProps = centerCoordinate
         ? { zoomLevel: 12, animationDuration: 0, centerCoordinate }
@@ -69,6 +68,9 @@ export const RidesMap: VFC<RideFilterProps> = ({ filter }) => {
                     }
                 }}
                 onPress={() => setSelected(null)}
+                onDidFinishLoadingMap={() => {
+                    void map.current?.getVisibleBounds().then((bbox) => setBbox(bbox as [Position, Position]));
+                }}
             >
                 {rides.map((x, i) => {
                     const isSelected = x.id === selected?.id;
@@ -86,9 +88,9 @@ export const RidesMap: VFC<RideFilterProps> = ({ filter }) => {
                                     <icons.Marker
                                         width={size}
                                         height={size}
-                                        fill={x.type === 'ride' ? '#e74c3c' : Colors.black}
+                                        fill={x.type === 'ride' ? Colors.primary : Colors.black}
                                     />
-                                    <ui.Box absolute alignItems='center' fillContainer paddingTop={`${size / 8 - 2}px`}>
+                                    <ui.Box absolute alignItems='center' fillContainer paddingTop={`${size / 8 + 1.5}px`}>
                                         <UserAvatar user={x.type === 'ride' ? x.ride.organizer : x.user} size={size / 2} />
                                     </ui.Box>
                                 </ui.Transition>
@@ -114,7 +116,7 @@ export const RidesMap: VFC<RideFilterProps> = ({ filter }) => {
                                         camera.current?.fitBounds(bbox.ne, bbox.sw, 64, 300);
                                     } else {
                                         showScreen({
-                                            screen: (
+                                            children: (
                                                 <FilteredRidesScreen
                                                     title='Rides'
                                                     filter={{
@@ -203,4 +205,4 @@ export const RidesMap: VFC<RideFilterProps> = ({ filter }) => {
             )}
         </ui.Box>
     );
-};
+});

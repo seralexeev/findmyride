@@ -110,7 +110,7 @@ export const SelectLocationView: FC<SelectLocationViewProps> = ({
                 camera.current?.setCamera({
                     centerCoordinate: value.location.coordinates,
                     animationMode: 'flyTo',
-                    animationDuration: 1000,
+                    animationDuration: 300,
                     zoomLevel: 12,
                 });
             }, 100);
@@ -128,8 +128,8 @@ export const SelectLocationView: FC<SelectLocationViewProps> = ({
         return onRegionUpdate(geometry.coordinates as Position);
     };
 
-    const onRegionUpdate = (coordinates: Position) => {
-        removeQuery(['geo/geocode']);
+    const onRegionUpdate = async (coordinates: Position) => {
+        await removeQuery(['geo/geocode']);
         onSelect(null);
 
         return reverseGeocode({ input: coordinates, types }).then((x) => {
@@ -159,13 +159,6 @@ export const SelectLocationView: FC<SelectLocationViewProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [inputFocused]);
 
-    useEffect(() => {
-        if (!value) {
-            void map.current?.getCenter().then((x) => onRegionUpdate(x as Position));
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
     return (
         <Fragment>
             <ui.Box flex flexCenter>
@@ -180,6 +173,11 @@ export const SelectLocationView: FC<SelectLocationViewProps> = ({
                     toolbarBottom={8}
                     cameraProps={centerCoordinate ? { zoomLevel: 12, animationDuration: 0, centerCoordinate } : null}
                     aux={aux}
+                    onDidFinishLoadingMap={() => {
+                        if (!value) {
+                            void map.current?.getCenter().then((x) => onRegionUpdate(x as Position));
+                        }
+                    }}
                 >
                     <MapboxGL.Camera ref={camera} />
                 </InteractiveMap>

@@ -23,9 +23,10 @@ export const BottomSheetPicker = <T extends string | number>({
     return (
         <Picker
             selectedValue={value}
-            onValueChange={(itemValue) => {
-                onChange?.(itemValue!);
-                setValue(itemValue!);
+            onValueChange={(_, itemIndex) => {
+                const item = items[itemIndex];
+                onChange?.(item!);
+                setValue(item!);
             }}
             style={{ height: 200 }}
             children={items.map((x) => (
@@ -52,7 +53,7 @@ export const useBottomSheetPicker = () => {
                     </ui.Box>
                     <ui.Box paddingHorizontal>
                         <ui.Button
-                            children='Apply'
+                            children='Save'
                             color='primary'
                             size='large'
                             onPress={() => Promise.resolve(onChange?.(ref.current as any)).then(() => close())}

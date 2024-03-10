@@ -43,23 +43,23 @@ export const App = memo(() => {
                                 <NavigationContainer linking={linking}>
                                     <NotificationStatusProvider>
                                         <ApiProvider>
-                                            <BottomSheetProvider>
-                                                <NotificationProvider>
-                                                    <GeoLocationStatusProvider>
-                                                        <GeoLocationProvider>
-                                                            <ScreenProvider>
-                                                                <ConfigProvider>
+                                            <ConfigProvider>
+                                                <BottomSheetProvider>
+                                                    <NotificationProvider>
+                                                        <GeoLocationStatusProvider>
+                                                            <GeoLocationProvider>
+                                                                <ScreenProvider>
                                                                     <ProfileProvider>
                                                                         <ScreenProviderHost>
                                                                             <RootNavigator />
                                                                         </ScreenProviderHost>
                                                                     </ProfileProvider>
-                                                                </ConfigProvider>
-                                                            </ScreenProvider>
-                                                        </GeoLocationProvider>
-                                                    </GeoLocationStatusProvider>
-                                                </NotificationProvider>
-                                            </BottomSheetProvider>
+                                                                </ScreenProvider>
+                                                            </GeoLocationProvider>
+                                                        </GeoLocationStatusProvider>
+                                                    </NotificationProvider>
+                                                </BottomSheetProvider>
+                                            </ConfigProvider>
                                         </ApiProvider>
                                     </NotificationStatusProvider>
                                 </NavigationContainer>

@@ -1,4 +1,5 @@
 import BottomSheet, { BottomSheetProps } from '@gorhom/bottom-sheet';
+import { uuid } from '@untype/toolbox';
 import React, { FC, ReactNode, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ui } from '.';
@@ -6,6 +7,7 @@ import { createUseContext } from '../hooks/createUseContext';
 import { useEvent } from '../hooks/useEvent';
 
 type BottomSheetOptions = {
+    id?: string;
     bottomSafeArea?: boolean;
     position: number | string;
     children: (args: { close: () => void }) => ReactNode;
@@ -16,20 +18,32 @@ type BottomSheetOptions = {
 export const [useBottomSheet, Provider] = createUseContext<(args: BottomSheetOptions) => void>('BottomSheetProvider');
 
 export const BottomSheetProvider: FC<{ children: ReactNode }> = ({ children }) => {
-    const [sheets, setSheets] = useState<BottomSheetOptions[]>(() => []);
+    const [sheets, setSheets] = useState<Array<BottomSheetOptions & { id: string }>>(() => []);
 
-    const showBottomSheet = useEvent((sheet: BottomSheetOptions) => {
-        setSheets((prev) => [...prev, sheet]);
+    const showBottomSheet = useEvent(({ id = uuid.v4(), ...sheet }: BottomSheetOptions) => {
+        setSheets((prev) => {
+            const stack = [...prev];
+            const index = prev.findIndex((x) => x.id === id);
+
+            if (index === -1) {
+                stack.push({ id, ...sheet });
+            } else {
+                stack[index] = { id, ...sheet };
+            }
+
+            return stack;
+        });
     });
 
     return (
         <Provider value={showBottomSheet}>
             {children}
-            {sheets.map((options, i) => (
+            {sheets.map((options) => (
                 <BottomSheetWrapper
+                    key={options.id}
                     {...options}
                     onClose={() => {
-                        setSheets((prev) => prev.filter((sheet) => sheet !== options));
+                        setSheets((prev) => prev.filter((sheet) => sheet.id !== options.id));
                         options.onClose?.();
                     }}
                 />

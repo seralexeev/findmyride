@@ -1,4 +1,4 @@
-import { ExpectedEndpoint, RpcInput, RpcItemsOutput } from '@findmyride/api';
+import { ExpectedEndpoint, RpcInput, RpcItemsOutput, RpcOutput } from '@findmyride/api';
 import { BottomSheetVirtualizedList } from '@gorhom/bottom-sheet';
 import { UseInfiniteQueryResult, keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import { array } from '@untype/toolbox';
@@ -7,7 +7,7 @@ import { ListRenderItem } from 'react-native';
 import { ui } from '../ui';
 import { withStyler } from '../ui/styler';
 import { paddingStyler } from '../ui/styler/viewStyler';
-import { useRpc } from './rpc';
+import { useRemoveQuery, useRpc } from './rpc';
 
 type ListEndpoint = ExpectedEndpoint<{ page: number }, { items: any[]; hasMore: boolean }>;
 
@@ -19,12 +19,13 @@ export const useRpcFlatList = <TEndpoint extends ListEndpoint>(
         onRefresh?: (() => void) | null;
     },
 ) => {
+    const removeQuery = useRemoveQuery();
     const request = useRpc(endpoint).useRequest();
     const query = useInfiniteQuery({
         initialPageParam: 1,
         queryKey: [endpoint, payload],
         queryFn: async ({ pageParam = 1 }) => {
-            const result: ListEndpoint = await request({ ...payload, page: pageParam } as any);
+            const result = (await request({ ...payload, page: pageParam } as any)) as RpcOutput<ListEndpoint>;
 
             return {
                 result,
@@ -35,9 +36,9 @@ export const useRpcFlatList = <TEndpoint extends ListEndpoint>(
         placeholderData: keepPreviousData,
     });
 
-    useEffect(() => query.remove, [query.remove]);
+    useEffect(() => void removeQuery([endpoint]), []);
     const refreshControl = ui.useRefreshControl(() => {
-        query.remove();
+        removeQuery([endpoint]);
 
         if (options?.onRefresh) {
             options.onRefresh();

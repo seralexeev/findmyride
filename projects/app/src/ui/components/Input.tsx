@@ -4,7 +4,7 @@ import { SvgProps } from 'react-native-svg';
 import { icons, ui } from '..';
 import { Theme } from '../theme';
 import { useTheme } from '../ThemeProvider';
-import { isReactComponent } from '../utils';
+import { isReactComponent, mergeRefs } from '../utils';
 
 type IconProps = { width?: number; height?: number; fill?: string };
 
@@ -60,10 +60,7 @@ export const Input = forwardRef(function Input(
             <ui.Box paddingVertical='10px' row flex alignItems='center'>
                 {startIcon && <ui.Box marginRight={1.5} children={startIcon} />}
                 <rn.TextInput
-                    ref={(current) => {
-                        ref.current = current;
-                        return outerRef;
-                    }}
+                    ref={mergeRefs(ref, outerRef)}
                     {...props}
                     style={style}
                     numberOfLines={1}
