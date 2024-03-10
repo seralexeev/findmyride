@@ -1,5 +1,7 @@
 # 🚴‍♂️ FindMyRide
 
+> I am currently migrating this project to new public repo from an old private repository rewriting it along the way. Many things are broken and working unstably. The application itself has been removed from the AppStore and GooglePlay. It will soon be restored, including the backend and user data.
+
 ## Screenshots
 
 | 🚴‍♂️ | 📱 | 🗺️ |
@@ -17,10 +19,10 @@
 
 ### Overview
 
-![Architecture Overview](https://github.com/seralexeev/findmyride/raw/assets/4503354/6ef21b65-00e1-475b-89a6-260603f90024)
+![Architecture Overview](https://github.com/seralexeev/findmyride/assets/4503354/6ef21b65-00e1-475b-89a6-260603f90024)
 
 ### Database structure
 
 [schema.sql](https://github.com/seralexeev/findmyride/blob/main/projects/api/src/migrations/schema.sql)
 
-![Database Structure](https://github.com/seralexeev/findmyride/raw/assets/4503354/2f8c440b-61fd-4461-ae24-5c3c37379fa2)
+![Database Structure](https://github.com/seralexeev/findmyride/assets/4503354/2f8c440b-61fd-4461-ae24-5c3c37379fa2)
