@@ -15,11 +15,6 @@
 -   [findmyride/api](https://github.com/seralexeev/findmyride/tree/main/projects/api)
 -   [findmyride/app](https://github.com/seralexeev/findmyride/tree/main/projects/app)
 
-#### Main packages
-
--   [findmyride/api](https://github.com/seralexeev/findmyride/tree/main/projects/api)
--   [findmyride/app](https://github.com/seralexeev/findmyride/tree/main/projects/app)
-
 #### Architecture (legacy)
 
 ![image](https://github.com/seralexeev/findmyride/assets/4503354/6ef21b65-00e1-475b-89a6-260603f90024)
