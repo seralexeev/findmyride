@@ -1,3 +1,4 @@
+import { ImageSchema } from '@findmyride/api';
 import React, { FC } from 'react';
 import { ui } from '../../ui';
 import { UserAvatar } from './UserAvatar';
@@ -7,7 +8,7 @@ type UserAvatarStackProps = {
     users: Array<{
         id: string;
         name: string;
-        avatar: ImageWithSizes | null;
+        avatar: ImageSchema | null;
     }>;
 };
 

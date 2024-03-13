@@ -1,3 +1,4 @@
+import { ImageSchema } from '@findmyride/api';
 import React, { Fragment, ReactNode, VFC } from 'react';
 import { ui } from '../../ui';
 import { useProfile } from './ProfileProvider';
@@ -7,7 +8,7 @@ import { useOpenUserProfile } from './services';
 export type UserMediaCardVm = {
     id: string;
     name: string;
-    avatar: ImageWithSizes | null;
+    avatar: ImageSchema | null;
 };
 
 type UserMediaCardProps = ui.BoxProps & {

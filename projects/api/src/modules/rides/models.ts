@@ -80,6 +80,7 @@ export const UpdateRide = z.object({
     termsUrl: z.string().nullable().optional(),
 });
 
+export type RideAction = z.infer<typeof RideAction>;
 export const RideAction = z.union([
     z.object({
         type: z.literal('@ride/START'),

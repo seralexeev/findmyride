@@ -1,4 +1,4 @@
-import { ParticipantStatus, RideStatus, RpcOutput } from '@findmyride/api';
+import { ParticipantStatus, RideAction, RideStatus, RpcOutput } from '@findmyride/api';
 import { LocationWithName } from '@untype/geo';
 import { assert, object } from '@untype/toolbox';
 import { formatDistanceToNow, isPast } from 'date-fns';

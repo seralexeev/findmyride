@@ -205,7 +205,7 @@ export class RidesOperationsController {
         },
     });
 
-    public setParticipantStatus = rpc({
+    public ['ride_ops/set_participant_status'] = rpc({
         input: z.object({
             userId: z.string(),
             rideId: z.string(),

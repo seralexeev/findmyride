@@ -4,6 +4,7 @@ import { formatDistanceToNow } from 'date-fns';
 import React, { FC, Fragment, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
+import { Jsonify } from 'type-fest';
 import { useRpcFlatListProps } from '../../api/RpcFlatList';
 import { ui } from '../../ui';
 import { RideCard } from '../rides/RideCard';
@@ -91,7 +92,10 @@ const FollowEvent: FC<{ event: EventByType<'follow'> }> = ({ event: { data } }) 
     );
 };
 
-const RidesListEvent: FC<{ event: { data: { rides: RidePreviewVm[] } }; title: string }> = ({ event: { data }, title }) => {
+const RidesListEvent: FC<{ event: { data: { rides: Array<Jsonify<RidePreviewVm>> } }; title: string }> = ({
+    event: { data },
+    title,
+}) => {
     const { width } = useWindowDimensions();
     const [index, setIndex] = useState(0);
 

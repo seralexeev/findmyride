@@ -1,4 +1,4 @@
-import { RpcItemsOutput, RpcOutput } from '@findmyride/api';
+import { RpcInput, RpcItemsOutput, RpcOutput } from '@findmyride/api';
 import { capitalCase } from 'change-case';
 import React, { FC, useState } from 'react';
 import { useInvalidate, useRpc } from '../../../api/rpc';
@@ -16,7 +16,7 @@ export const ParticipantRow: FC<ParticipantRowProps> = ({ item, ride }) => {
     const [state, setState] = useState(item);
     const [mutateAsync] = useRpc('ride_ops/invite').useMutation();
     const inviteUser = (userId: string) => mutateAsync({ rideId: ride.id, userId });
-    const [approveOrDeclineReq] = useRpc('ride_ops/find_participants').useMutation();
+    const [approveOrDeclineReq] = useRpc('ride_ops/set_participant_status').useMutation();
     const invalidate = useInvalidate();
     const { profile } = useProfile();
 
@@ -38,9 +38,9 @@ export const ParticipantRow: FC<ParticipantRowProps> = ({ item, ride }) => {
         }
 
         if (ride.isOrganizer) {
-            const changeParticipantStatus = (userId: string, status: RpcInput<'setParticipantStatus'>['status']) => {
+            const changeParticipantStatus = (userId: string, status: RpcInput<'ride_ops/set_participant_status'>['status']) => {
                 return approveOrDeclineReq({ rideId: ride.id, status, userId }).then(async (x) => {
-                    await invalidate(['getRide']);
+                    await invalidate(['ride/get']);
                     return x;
                 });
             };

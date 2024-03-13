@@ -1,6 +1,7 @@
 import { RpcInput, formatSlug } from '@findmyride/api';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { keepPreviousData } from '@tanstack/react-query';
+import { assert } from '@untype/toolbox';
 import React, { FC, memo, useCallback } from 'react';
 import { useInvalidate, useRpc } from '../../api/rpc';
 import { useConfig } from '../../config/ConfigProvider';
@@ -9,7 +10,7 @@ import { useTabNavigatorInset } from '../../hooks/useTabNavigatorInset';
 import { icons, ui } from '../../ui';
 import { useScreen } from '../../ui/ScreenProvider';
 import { ChatRoom } from '../chat/ChatRoom';
-import { InteractiveMap } from '../map/InteractiveMap';
+import { InteractiveMap, UserMarker } from '../map/InteractiveMap';
 import { FilteredRidesScreen } from '../rides/FilteredRidesScreen';
 import { RideCard } from '../rides/RideCard';
 import { RiderLevelIcon } from '../rides/RiderLevelIcon';
@@ -263,13 +264,13 @@ const UserProfileView: FC<{ id: string }> = memo(({ id }) => {
 
 type FilteredRidesFirstPageProps = {
     title: string;
-    filter: RpcInput<'getRides'>['filter'];
+    filter: RpcInput<'ride/find'>['filter'];
 };
 
 const FilteredRidesFirstPage: FC<FilteredRidesFirstPageProps> = ({ filter, title }) => {
     const { showScreen } = useScreen();
 
-    const ridesQuery = useRpc('getRides').useQuery({
+    const ridesQuery = useRpc('ride/find').useQuery({
         input: { filter, page: 1 },
         placeholderData: keepPreviousData,
     });
@@ -284,20 +285,16 @@ const FilteredRidesFirstPage: FC<FilteredRidesFirstPageProps> = ({ filter, title
     return ridesQuery.data.items.length > 0 ? (
         <ui.Box>
             <ui.Stack spacing={2}>
-                {ridesQuery.data.items.map((x) => (
-                    <RideCard key={x.id} ride={x} />
-                ))}
+                {ridesQuery.data.items
+                    .map((x) => (x.type === 'ride' ? <RideCard key={x.id} ride={x.ride} /> : null))
+                    .filter(assert.exists)}
             </ui.Stack>
             {ridesQuery.data.hasMore && (
                 <ui.Button
                     color='light'
                     children='Show All'
                     marginTop={2}
-                    onPress={() => {
-                        return showScreen({
-                            screen: <FilteredRidesScreen filter={filter} title={title} />,
-                        });
-                    }}
+                    onPress={() => showScreen({ children: <FilteredRidesScreen filter={filter} title={title} /> })}
                 />
             )}
         </ui.Box>
