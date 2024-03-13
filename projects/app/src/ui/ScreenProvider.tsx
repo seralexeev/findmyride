@@ -1,15 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationOptions } from '@react-navigation/stack';
 import { uuid } from '@untype/toolbox';
-import React, { FC, ReactNode, useEffect, useState } from 'react';
+import React, { FC, memo, ReactNode, useEffect, useState } from 'react';
 import { createUseContext } from '../hooks/createUseContext';
 
-type ScreenArgs = {
-    goBack: () => void;
-};
+type ScreenChildren = ReactNode | ((args: { goBack: () => void }) => ReactNode);
 
 type ScreenProps = {
-    children: ReactNode | ((args: ScreenArgs) => ReactNode);
+    children: ScreenChildren;
     options?: StackNavigationOptions;
     removeScreen: () => void;
 };
@@ -19,32 +17,29 @@ type ContextType = {
         id?: string;
         onClose?: () => void;
         options?: StackNavigationOptions;
-        children: ReactNode | ((args: ScreenArgs) => ReactNode);
+        children: ScreenChildren;
     }) => void;
-    screens: Record<string, ScreenProps>;
 };
 
 export const [useScreen, Provider] = createUseContext<ContextType>('ScreenProvider');
 
 const Stack = createStackNavigator();
 
-export const ScreenProviderHost: FC<{ children: ReactNode }> = ({ children }) => {
-    const { screens } = useScreen();
+const [useScreenNode, NodeProvider] = createUseContext<ReactNode>('ScreenNodeProvider');
+export const ScreenNodeProvider: FC<{ children: ReactNode }> = memo(({ children }) => {
+    const node = useScreenNode();
 
     return (
         <Stack.Navigator>
             <Stack.Screen name='Root' children={() => children} />
-            {Object.entries(screens).map(([key, { options, ...screen }]) => (
-                <Stack.Screen key={key} name={key} children={() => <ScreenWrapper {...screen} />} options={options} />
-            ))}
+            {node}
         </Stack.Navigator>
     );
-};
+});
 
-export const ScreenProvider: FC<{ children: ReactNode }> = ({ children }) => {
-    const [screens, setScreens] = useState<Record<string, ScreenProps>>({});
-    // TODO: fixme
+export const ScreenProvider: FC<{ children: ReactNode }> = memo(({ children }) => {
     const { navigate } = useNavigation<any>();
+    const [screens, setScreens] = useState<Record<string, ScreenProps>>({});
 
     const value: ContextType = {
         showScreen: ({ id = uuid.v4(), children: screen, options, onClose }) => {
@@ -65,15 +60,22 @@ export const ScreenProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 setTimeout(res, 500);
             });
         },
-        screens,
     };
 
-    return <Provider value={value} children={children} />;
-};
+    const node = Object.entries(screens).map(([key, { options, ...screen }]) => (
+        <Stack.Screen key={key} name={key} children={() => <ScreenWrapper {...screen} />} options={options} />
+    ));
+
+    return (
+        <Provider value={value}>
+            <NodeProvider value={node} children={children} />
+        </Provider>
+    );
+});
 
 type ScreenWrapperProps = {
     removeScreen: () => void;
-    children: ReactNode | ((args: ScreenArgs) => ReactNode);
+    children: ScreenChildren;
 };
 
 const ScreenWrapper: FC<ScreenWrapperProps> = ({ removeScreen, children }) => {

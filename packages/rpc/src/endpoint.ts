@@ -16,7 +16,7 @@ export type EndpointConfig<TRequest, TResponse, TContext, TUser, TInput, TOutput
     output?: z.ZodType<TOutput>;
     anonymous?: TAnonymous;
     resolve: (args: {
-        input: TInput extends z.ZodType ? z.infer<TInput> : never;
+        input: TInput extends z.ZodType ? Jsonify<z.infer<TInput>> : never;
         ctx: TContext & { user: undefined extends TAnonymous ? TUser : TUser | null };
         params: Record<string, string>;
         query: Record<string, string>;

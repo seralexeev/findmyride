@@ -1,6 +1,6 @@
 import BottomSheet, { BottomSheetProps } from '@gorhom/bottom-sheet';
 import { uuid } from '@untype/toolbox';
-import React, { FC, ReactNode, useState } from 'react';
+import React, { FC, ReactNode, memo, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ui } from '.';
 import { createUseContext } from '../hooks/createUseContext';
@@ -35,22 +35,26 @@ export const BottomSheetProvider: FC<{ children: ReactNode }> = ({ children }) =
         });
     });
 
+    const node = sheets.map((options) => (
+        <BottomSheetWrapper
+            key={options.id}
+            {...options}
+            onClose={() => {
+                setSheets((prev) => prev.filter((sheet) => sheet.id !== options.id));
+                options.onClose?.();
+            }}
+        />
+    ));
+
     return (
         <Provider value={showBottomSheet}>
-            {children}
-            {sheets.map((options) => (
-                <BottomSheetWrapper
-                    key={options.id}
-                    {...options}
-                    onClose={() => {
-                        setSheets((prev) => prev.filter((sheet) => sheet.id !== options.id));
-                        options.onClose?.();
-                    }}
-                />
-            ))}
+            <NodeProvider value={node} children={children} />
         </Provider>
     );
 };
+
+const [useBottomSheetNode, NodeProvider] = createUseContext<ReactNode>('BottomSheetNodeProvider');
+export const BottomSheetNodeProvider: FC = memo(useBottomSheetNode);
 
 const BottomSheetWrapper: FC<
     BottomSheetOptions & { onClose: () => void; props?: Omit<BottomSheetProps, 'children' | 'snapPoints'> }
@@ -71,9 +75,7 @@ const BottomSheetWrapper: FC<
             <ui.Box
                 flex
                 paddingBottom={bottomSafeArea ? `${bottom}px` : undefined}
-                children={children({
-                    close: () => bottomSheetRef.current?.close(),
-                })}
+                children={children({ close: () => bottomSheetRef.current?.close() })}
             />
         </BottomSheet>
     );

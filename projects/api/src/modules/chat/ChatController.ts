@@ -3,7 +3,7 @@ import { singleton } from 'tsyringe';
 import { z } from 'zod';
 import { ChatRoom, Message, User, User2Room } from '../../entities';
 import { navigationAction } from '../models/shared';
-import { DateSchema, PageSchema, createPager } from '../models/utils';
+import { PageSchema, createPager } from '../models/utils';
 import { NotificationService } from '../push/NotificationService';
 import { refreshQueriesAction } from '../push/actions';
 import { getRidePushTitle } from '../push/utils';
@@ -20,7 +20,7 @@ export class ChatController {
     public ['chat/get_room_messages'] = rpc({
         input: z.object({
             roomId: z.string(),
-            date: DateSchema,
+            date: z.date(),
             direction: z.union([z.literal('forward'), z.literal('back')]),
         }),
         resolve: async ({ ctx, input }) => {

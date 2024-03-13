@@ -1,7 +1,9 @@
 import z from 'zod';
 
 export type FileInput = {
-    buffer: Buffer;
+    // This is a hack to make it work with the Jsonify type.
+    // I'm not sure how to fix it properly.
+    buffer: Buffer & string;
     mimetype: string;
     originalname: string;
 };

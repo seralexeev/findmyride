@@ -15,3 +15,5 @@ export type Merge<T extends object> = {
 };
 
 export type Simplify<T> = { [K in keyof T]: T[K] } & {};
+
+export type IsAny<T> = 0 extends 1 & T ? true : false;

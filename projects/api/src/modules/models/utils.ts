@@ -17,7 +17,6 @@ export const createPager = (page: number, pageSize: number) => {
     return { limit, offset: pageSize * (page - 1), slice };
 };
 
-export const DateSchema = z.union([z.date(), z.string()]);
 export const PageSchema = z.number().int().positive().min(1);
 
 export const checkPermission = (ctx: Context, expectedId: string, message: string) => {

@@ -4,9 +4,6 @@ tasks:
   android:
     command: 'yarn react-native run-android'
     local: true
-    options:
-      persistent: false
-      outputStyle: buffer
 
   ios:
     command: 'yarn react-native run-ios'
@@ -21,7 +18,7 @@ tasks:
       - '^:tsc'
     local: true
 
-  dev_ios_device:
+  ios_device:
     command: 'yarn react-native run-ios --device'
     inputs:
       - 'package.json'

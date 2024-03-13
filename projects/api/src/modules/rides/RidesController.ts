@@ -7,7 +7,7 @@ import { singleton } from 'tsyringe';
 import { z } from 'zod';
 import { File, GeoJsonSelector, Ride, User, Users2Ride } from '../../entities';
 import { schedule } from '../../worker';
-import { DateSchema, PageSchema, checkPermission, createPager } from '../models/utils';
+import { PageSchema, checkPermission, createPager } from '../models/utils';
 import { getRidePushTitle } from '../push/utils';
 import { rpc } from '../rpc';
 import { RideService } from './RideService';
@@ -362,8 +362,8 @@ export class RidesController {
                 participantId: z.string().optional(),
                 bbox: z.tuple([Position, Position]).optional(),
                 status: RideStatus.optional(),
-                fromDate: DateSchema.optional(),
-                toDate: DateSchema.optional(),
+                fromDate: z.date().optional(),
+                toDate: z.date().optional(),
                 active: z.boolean().optional(),
                 allowClusters: z.boolean().optional(),
             }),

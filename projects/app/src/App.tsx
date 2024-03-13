@@ -16,8 +16,8 @@ import { NotificationProvider } from './modules/notifications/NotificationProvid
 import { NotificationStatusProvider } from './modules/notifications/NotificationStatusProvider';
 import { ProfileProvider } from './modules/user/ProfileProvider';
 import { ui } from './ui';
-import { BottomSheetProvider } from './ui/BottomSheetProvider';
-import { ScreenProvider, ScreenProviderHost } from './ui/ScreenProvider';
+import { BottomSheetNodeProvider, BottomSheetProvider } from './ui/BottomSheetProvider';
+import { ScreenNodeProvider, ScreenProvider } from './ui/ScreenProvider';
 import { ThemeProvider } from './ui/ThemeProvider';
 import { theme } from './ui/theme';
 
@@ -37,35 +37,36 @@ export const App = memo(() => {
             <StatusBar barStyle='dark-content' />
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <ViewContextProvider context='app'>
-                    <ThemeProvider config={theme}>
-                        <ui.Box backgroundColor='#fff' flex>
-                            <SafeAreaProvider>
-                                <NavigationContainer linking={linking}>
-                                    <NotificationStatusProvider>
-                                        <ApiProvider>
-                                            <ConfigProvider>
-                                                <BottomSheetProvider>
-                                                    <NotificationProvider>
-                                                        <GeoLocationStatusProvider>
-                                                            <GeoLocationProvider>
-                                                                <ScreenProvider>
+                    <BottomSheetProvider>
+                        <ThemeProvider config={theme}>
+                            <ui.Box backgroundColor='#fff' flex>
+                                <SafeAreaProvider>
+                                    <NavigationContainer linking={linking}>
+                                        <ScreenProvider>
+                                            <NotificationStatusProvider>
+                                                <ApiProvider>
+                                                    <ConfigProvider>
+                                                        <NotificationProvider>
+                                                            <GeoLocationStatusProvider>
+                                                                <GeoLocationProvider>
                                                                     <ProfileProvider>
-                                                                        <ScreenProviderHost>
+                                                                        <ScreenNodeProvider>
                                                                             <RootNavigator />
-                                                                        </ScreenProviderHost>
+                                                                            <BottomSheetNodeProvider />
+                                                                        </ScreenNodeProvider>
                                                                     </ProfileProvider>
-                                                                </ScreenProvider>
-                                                            </GeoLocationProvider>
-                                                        </GeoLocationStatusProvider>
-                                                    </NotificationProvider>
-                                                </BottomSheetProvider>
-                                            </ConfigProvider>
-                                        </ApiProvider>
-                                    </NotificationStatusProvider>
-                                </NavigationContainer>
-                            </SafeAreaProvider>
-                        </ui.Box>
-                    </ThemeProvider>
+                                                                </GeoLocationProvider>
+                                                            </GeoLocationStatusProvider>
+                                                        </NotificationProvider>
+                                                    </ConfigProvider>
+                                                </ApiProvider>
+                                            </NotificationStatusProvider>
+                                        </ScreenProvider>
+                                    </NavigationContainer>
+                                </SafeAreaProvider>
+                            </ui.Box>
+                        </ThemeProvider>
+                    </BottomSheetProvider>
                 </ViewContextProvider>
             </GestureHandlerRootView>
         </RemountAppProvider>
