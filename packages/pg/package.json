@@ -9,7 +9,7 @@
         "@jest/globals": "29.7.0",
         "@types/big.js": "6.2.2",
         "@types/dedent": "0.7.2",
-        "@types/pg": "8.11.2",
+        "@types/pg": "8.11.4",
         "testcontainers": "10.7.2"
     },
     "dependencies": {

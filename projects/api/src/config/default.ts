@@ -35,6 +35,9 @@ export const { shape, define } = new ConfigShape({
         port: z.number().default(5432),
         ssl: z.boolean().default(false),
     },
+    migrations: {
+        enabled: z.boolean().default(true),
+    },
     strava: {
         apiUrl: z.string().default('https://www.strava.com/api/v3'),
         clientId: z.string().default('121913'),

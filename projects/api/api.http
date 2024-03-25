@@ -9,7 +9,6 @@ Content-Type: application/json
 # Timezone API
 GET https://api.geotimezone.com/public/timezone?latitude=-33.903066&longitude=151.193153
 
-# File Upload
 POST http://localhost:3000/api/geo/timezone
 Content-Type: application/json
 

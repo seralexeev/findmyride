@@ -132,7 +132,7 @@ class PooledPg implements PoolWrapper {
     public query = async <R extends QueryResultRow = any, I extends any[] = any[]>(
         queryTextOrConfig: string | QueryConfig<I>,
         values?: I,
-    ): Promise<QueryResult<R>> => this.connect((client) => client.query(queryTextOrConfig, values));
+    ): Promise<QueryResult<R>> => this.connect((client) => client.query<R>(queryTextOrConfig, values));
 
     public connect = async <T>(fn: (client: PoolClient) => Promise<T>): Promise<T> => {
         const client = await this.pool.connect();
@@ -197,7 +197,7 @@ class TransactionScope implements Transaction {
     public query = async <R extends QueryResultRow = any, I extends any[] = any[]>(
         queryTextOrConfig: string | QueryConfig<I>,
         values?: I,
-    ): Promise<QueryResult<R>> => this.connect((x) => x.query(queryTextOrConfig, values));
+    ): Promise<QueryResult<R>> => this.connect((x) => x.query<R>(queryTextOrConfig, values));
 
     public connect = async <T>(fn: (client: PoolClient) => Promise<T>): Promise<T> => {
         if (!this.clientPromise) {

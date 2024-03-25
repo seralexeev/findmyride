@@ -8,6 +8,7 @@ import http from 'node:http';
 import { container } from 'tsyringe';
 import { Config } from './config';
 import { controllers } from './controllers';
+import { Migrations } from './migrations/MigrationRunner';
 import { startWorker } from './worker';
 
 class Server extends ExpressServer {
@@ -45,6 +46,10 @@ export const createServer = async () => {
     container.register(Container, { useValue: container });
     container.register(Pg, { useValue: pg });
     container.register(Config, { useValue: config });
+
+    if (config.migrations.enabled) {
+        await container.resolve(Migrations).run();
+    }
 
     const { app, endpoints } = new Server(logger).createServer({
         container,

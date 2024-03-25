@@ -30,7 +30,7 @@ export const migrations: MigrationList = [
     { id: 1, name: 'init', apply: init_1 },
     { id: 2, name: 'add_files', apply: add_files_2 },
     { id: 3, name: 'add_users', apply: add_users_3 },
-    { id: 4, name: 'add_devices', apply: add_sessions_4 },
+    { id: 4, name: 'add_sessions', apply: add_sessions_4 },
     { id: 5, name: 'add_rides', apply: add_rides_5 },
     { id: 6, name: 'add_ride_images', apply: add_ride_images_6 },
     { id: 7, name: 'add_social', apply: add_social_7 },

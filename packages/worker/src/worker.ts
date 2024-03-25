@@ -13,6 +13,7 @@ import {
     TaskList,
     parseCronItems,
     run,
+    runMigrations,
 } from 'graphile-worker';
 import { makeAddJob } from 'graphile-worker/dist/helpers';
 import { CompiledSharedOptions, processSharedOptions } from 'graphile-worker/dist/lib';
@@ -177,7 +178,7 @@ export const createWorker = <T extends Record<string, Class<any>>>(handlers: () 
 
         sharedOptions = lazy(() => processSharedOptions(options));
 
-        // await runMigrations(sharedOptions);
+        await runMigrations(options);
         await run(options);
 
         logger.info('Worker connected and looking for jobs', {

@@ -1,17 +1,28 @@
-import { logger } from '@untype/logger';
+import 'reflect-metadata';
+import 'source-map-support/register';
+
+import { Logger, logger } from '@untype/logger';
 import { MigrationRunner } from '@untype/migrations';
 import { Pg } from '@untype/pg';
-import { LoggerType } from '@untype/toolbox';
+import { migrateWorker } from '@untype/worker';
+import { singleton } from 'tsyringe';
 import { migrations } from './migrations';
 
+@singleton()
 export class Migrations {
     private runner;
 
-    public constructor(logger: LoggerType, pg: Pg) {
+    public constructor(
+        logger: Logger,
+        private pg: Pg,
+    ) {
         this.runner = new MigrationRunner(logger, pg);
     }
 
-    public run = () => this.runner.run(migrations);
+    public run = async () => {
+        await migrateWorker(this.pg);
+        await this.runner.run(migrations);
+    };
 }
 
 if (require.main === module) {

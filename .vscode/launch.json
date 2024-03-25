@@ -6,25 +6,16 @@
             "type": "node",
             "request": "launch",
             "console": "integratedTerminal",
-            // "preLaunchTask": "🌍 api:tsc",
-            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsc-watch",
-            "cwd": "${workspaceFolder}/projects/api",
-            "env": {
-                "TZ": "UTC"
-            },
-            "args": ["--build", "--onSuccess", "node ${workspaceFolder}/projects/api/dist/start.js"]
+            "runtimeExecutable": "moon",
+            "args": ["run", "api:dev"]
         },
         {
             "name": "🪲 debug",
             "type": "node",
             "request": "launch",
             "console": "integratedTerminal",
-            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsc-watch",
-            "cwd": "${workspaceFolder}/projects/api",
-            "env": {
-                "TZ": "UTC"
-            },
-            "args": ["--build", "--onSuccess", "node ${workspaceFolder}/projects/api/dist/debug.js"]
+            "runtimeExecutable": "moon",
+            "args": ["run", "api:dev_script"]
         }
     ]
 }

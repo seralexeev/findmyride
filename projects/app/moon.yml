@@ -4,6 +4,9 @@ tasks:
   android:
     command: 'yarn react-native run-android'
     local: true
+    options:
+      persistent: false
+      outputStyle: buffer
 
   ios:
     command: 'yarn react-native run-ios'

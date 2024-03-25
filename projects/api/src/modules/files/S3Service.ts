@@ -1,5 +1,4 @@
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Logger as AWSLogger } from '@aws-sdk/types/dist-types/logger';
 import { Logger } from '@untype/logger';
 import { InternalError } from '@untype/toolbox';
@@ -45,17 +44,6 @@ export class S3Service {
                 cause,
             });
         }
-    };
-
-    public getPresignedUrl = (key: string) => {
-        const command = new PutObjectCommand({
-            Bucket: this.config.storage.bucket,
-            Key: key,
-        });
-
-        return getSignedUrl(this.client, command, {
-            expiresIn: 5 * 60,
-        });
     };
 
     public getFileBuffer = async (key: string) => {

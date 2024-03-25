@@ -36,11 +36,14 @@ export class MigrationRunner {
                     }
                 }
 
-                this.logger.info('Migration list:', allMigrations);
-
                 const appliedMigrations = await this.getAppliedMigrations(t);
+                this.logger.info('Found migrations:', {
+                    applied: `${appliedMigrations.length} / ${allMigrations.length}`,
+                    pending: allMigrations.length - appliedMigrations.length,
+                });
+
                 if (appliedMigrations.length > 0) {
-                    this.logger.info('Applied migrations:', appliedMigrations);
+                    this.logger.info('Last applied migrations:', appliedMigrations.slice(-5));
                 } else {
                     this.logger.info('No migrations have been applied');
                 }
