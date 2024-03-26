@@ -23,9 +23,6 @@ tasks:
 
   ios_device:
     command: 'yarn react-native run-ios --device'
-    inputs:
-      - 'package.json'
-      - 'ios/Podfile'
     local: true
     deps:
       - '~:pod_install'

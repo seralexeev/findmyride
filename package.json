@@ -12,7 +12,7 @@
         "projects/*"
     ],
     "devDependencies": {
-        "@moonrepo/cli": "1.22.10",
+        "@moonrepo/cli": "1.23.0",
         "prettier": "3.2.5",
         "ts-node": "10.9.2",
         "tsc-watch": "6.0.4",

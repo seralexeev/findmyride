@@ -18,7 +18,7 @@ export const TextInputScreen: FC<TextInputScreenProps> = ({
     header,
     multiline,
     numberOfLines,
-    validate,
+    validate = () => true,
     hint,
 }) => {
     const [text, setText] = useState(value ?? '');
@@ -28,10 +28,10 @@ export const TextInputScreen: FC<TextInputScreenProps> = ({
 
     useEffect(() => {
         setValidating(true);
-        void Promise.resolve(validate?.(text))
+        void Promise.resolve(validate(text))
             .then(setIsValid, () => setIsValid(false))
             .finally(() => setValidating(false));
-    }, [text, validate]);
+    }, [text]);
 
     return (
         <ui.Screen

@@ -15,7 +15,7 @@ export const ParticipatesList: FC<ParticipatesListProps> = memo(({ ride }) => {
     const [query, setQuery] = useState('');
     const [debouncedQuery] = useDebounce(query, 500, { leading: true });
     const { showScreen } = useScreen();
-    const [flatListProps, itemsQUery] = useRpcFlatListProps(
+    const [flatListProps, itemsQuery] = useRpcFlatListProps(
         'ride_ops/find_participants',
         { rideId: ride.id, query: debouncedQuery },
         (x) => x.user.id,
@@ -28,7 +28,7 @@ export const ParticipatesList: FC<ParticipatesListProps> = memo(({ ride }) => {
                     <ui.Box padding row alignItems='center'>
                         <ui.Box flex marginRight>
                             <ui.Input
-                                loading={itemsQUery.isFetching}
+                                loading={itemsQuery.isFetching}
                                 value={query}
                                 onChangeText={setQuery}
                                 color='tertiary'
@@ -46,7 +46,7 @@ export const ParticipatesList: FC<ParticipatesListProps> = memo(({ ride }) => {
                     <ui.Divider />
                 </Fragment>
             )}
-            {itemsQUery.isSuccess ? (
+            {itemsQuery.isSuccess ? (
                 <ui.BottomSheetFlatList<RpcItemsOutput<'ride_ops/find_participants'>>
                     {...flatListProps}
                     keyExtractor={(x) => x.user.id}
@@ -68,7 +68,7 @@ export const ParticipatesList: FC<ParticipatesListProps> = memo(({ ride }) => {
                     paddingBottom={10}
                 />
             ) : (
-                <ui.FetchFallback query={itemsQUery} spinner />
+                <ui.FetchFallback query={itemsQuery} spinner />
             )}
         </ui.Box>
     );

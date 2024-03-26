@@ -16,8 +16,8 @@ export const RidesList: FC<RidesListProps> = memo(({ filter, onRefresh, paddingB
     return (
         <RpcFlatList
             endpoint='ride/find'
-            renderItem={({ item }) =>
-                item.type === 'ride' ? (
+            renderItem={({ item }) => {
+                return item.type === 'ride' ? (
                     <RideCard ride={item.ride} />
                 ) : (
                     <ui.Box borderRadius backgroundColor='#fff' borderColor borderWidth overflowHidden padding>
@@ -32,8 +32,8 @@ export const RidesList: FC<RidesListProps> = memo(({ filter, onRefresh, paddingB
                             }
                         />
                     </ui.Box>
-                )
-            }
+                );
+            }}
             payload={{ filter }}
             keyExtractor={(x, query) => `${x.id}-${query.dataUpdatedAt}`}
             paddingHorizontal={2}

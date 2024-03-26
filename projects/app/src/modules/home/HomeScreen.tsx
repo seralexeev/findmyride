@@ -1,9 +1,10 @@
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useFocusEffect } from '@react-navigation/native';
 import { keepPreviousData } from '@tanstack/react-query';
-import React, { FC, useCallback } from 'react';
+import React, { FC } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRpc } from '../../api/rpc';
+import { useInvalidate, useRpc } from '../../api/rpc';
+import { useEvent } from '../../hooks/useEvent';
 import { useTabNavigatorInset } from '../../hooks/useTabNavigatorInset';
 import { icons, ui } from '../../ui';
 import { useScreen } from '../../ui/ScreenProvider';
@@ -13,12 +14,12 @@ import { FeedScreen } from '../feed/FeedScreen';
 import { RidesList } from '../rides/RidesList';
 import { RidesMap } from '../rides/RidesMap';
 import { RideFilter, useRidesFilter } from '../rides/filter/RideFilter';
-import { useProfile } from '../user/ProfileProvider';
 import { SearchUsersScreen } from '../user/SearchUsersScreen';
 import { UserLocationButton } from '../user/UserLocationButton';
 
 const snapPoints = [600];
 export const HomeScreen: FC = () => {
+    const invalidate = useInvalidate();
     const { top } = useSafeAreaInsets();
     const [bottomSheetRef, bottomSheetProps] = useBottomSheetHelper(snapPoints);
     const { showScreen } = useScreen();
@@ -29,10 +30,14 @@ export const HomeScreen: FC = () => {
         refetchInterval: 30000,
     });
 
-    const { logout } = useProfile();
+    const refetch = useEvent(() => {
+        void (async () => {
+            await homeDataQuery.refetch();
+            await invalidate(['ride/find']);
+        });
+    });
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useFocusEffect(useCallback(() => void homeDataQuery.refetch(), []));
+    useFocusEffect(refetch);
 
     return (
         <ui.Screen topSafeArea={false} white name='HomeScreen'>
@@ -107,7 +112,7 @@ export const HomeScreen: FC = () => {
                         <RidesList
                             filter={filter}
                             paddingBottom={paddingBottom}
-                            onRefresh={homeDataQuery.refetch}
+                            onRefresh={refetch}
                             ListHeaderComponent={
                                 <ui.Text
                                     marginBottom={3}

@@ -208,7 +208,7 @@ export class PragmaticJsonConverter extends JsonConverter {
     }
 
     protected override convertArray(seen: Set<unknown>, array: unknown[]) {
-        const isLongArray = array.length > 32;
+        const isLongArray = array.length > 128;
         const arrayToDump = isLongArray
             ? [...array.slice(0, 16), '...truncated', ...array.slice(array.length - 16, array.length)]
             : array;

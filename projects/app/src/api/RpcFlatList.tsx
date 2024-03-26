@@ -36,7 +36,7 @@ export const useRpcFlatList = <TEndpoint extends ListEndpoint>(
         placeholderData: keepPreviousData,
     });
 
-    useEffect(() => void removeQuery([endpoint]), []);
+    useEffect(() => () => void removeQuery([endpoint]), []);
     const refreshControl = ui.useRefreshControl(() => {
         removeQuery([endpoint]);
 
